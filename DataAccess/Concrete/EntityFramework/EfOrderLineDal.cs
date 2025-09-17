@@ -4,7 +4,7 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    internal class EfOrderLineDal : EfEntityRepositoryBase<OrderLine, MyShopContext>, IOrderLineDal
+    public class EfOrderLineDal : EfEntityRepositoryBase<OrderLine, MyShopContext>, IOrderLineDal
     {
     }
 }

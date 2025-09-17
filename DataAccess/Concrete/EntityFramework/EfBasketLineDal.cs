@@ -4,7 +4,7 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    internal class EfBasketLineDal : EfEntityRepositoryBase<BasketLine, MyShopContext>, IBasketLineDal
+    public class EfBasketLineDal : EfEntityRepositoryBase<BasketLine, MyShopContext>, IBasketLineDal
     {
     }
 }

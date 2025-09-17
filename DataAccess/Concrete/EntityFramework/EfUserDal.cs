@@ -4,7 +4,7 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    internal class EfUserDal : EfEntityRepositoryBase<User, MyShopContext>, IUserDal
+    public class EfUserDal : EfEntityRepositoryBase<User, MyShopContext>, IUserDal
     {
     }
 }

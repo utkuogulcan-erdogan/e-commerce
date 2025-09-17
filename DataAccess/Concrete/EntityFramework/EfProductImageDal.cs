@@ -4,7 +4,7 @@ using Entities.Concrete;
 
 namespace DataAccess.Concrete.EntityFramework
 {
-    internal class EfProductImageDal : EfEntityRepositoryBase<ProductImage, MyShopContext>, IProductImageDal
+    public class EfProductImageDal : EfEntityRepositoryBase<ProductImage, MyShopContext>, IProductImageDal
     {
     }
 }
