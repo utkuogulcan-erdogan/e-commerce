@@ -16,7 +16,6 @@ namespace Entities.Concrete
         public bool IsPrimary { get; set; }
         public int SortOrder { get; set; }
         public DateTime CreatedAt { get; set; }
-        [JsonIgnore]
         public Product Product { get; set; }
     }
 }

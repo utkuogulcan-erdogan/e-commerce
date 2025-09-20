@@ -15,5 +15,9 @@ namespace Entities.Concrete
         public decimal TotalAmount { get; set; }
         public int OrderStatus { get; set; }
         public DateTime CreatedAt { get; set; }
+        public User User { get; set; } = new User();
+        public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
+        public OrderAddress OrderAddress { get; set; } = new OrderAddress();
+        public OrderPayment OrderPayment { get; set; } = new OrderPayment();
     }
 }

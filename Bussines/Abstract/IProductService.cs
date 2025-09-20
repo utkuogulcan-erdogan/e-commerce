@@ -11,11 +11,11 @@ namespace Bussiness.Abstract
 {
     public interface IProductService
     {
-        IDataResult <List<Product>> GetAll();
+        Task<IDataResult <List<Product>>> GetAll();
         Task<IDataResult<List<Product>>> GetAllProductsAsync();
-        IDataResult <Product> GetById(Guid productId);
-        IResult Add(Product product);
-        IResult Update(Product product);
-        IResult Delete(Product product);
+        Task<IDataResult<Product>> GetById(Guid productId);
+        Task<IResult> Add(Product product);
+        Task<IResult> Update(Product product);
+        Task<IResult> Delete(Guid id);
     }
 }

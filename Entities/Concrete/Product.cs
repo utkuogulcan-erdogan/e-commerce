@@ -18,6 +18,9 @@ namespace Entities.Concrete
         public Guid? CategoryId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public ICollection<ProductImage> Images { get; set; }
+        public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
+        public ICollection<BasketLine> BasketLines { get; set; } = new List<BasketLine>();
+        public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
+
     }
 }

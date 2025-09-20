@@ -18,32 +18,32 @@ namespace Bussiness.Concrete
             _userDal = userDal;
         }
 
-        public IResult Add(User user)
+        public async Task<IResult> Add(User user)
         {
-            _userDal.Add(user);
+            await _userDal.AddAsync(user);
             return new SuccessResult("User added successfully.");
         }
 
-        public IResult Delete(User user)
+        public async Task<IResult> Delete(Guid id)
         {
-            _userDal.Delete(user);
+            await _userDal.DeleteAsync(id);
             return new SuccessResult("User deleted successfully.");
         }
 
-        public IDataResult<List<User>> GetAll()
+        public async Task<IDataResult<List<User>>> GetAll()
         {
-            _userDal.GetAll();
-            return new SuccessDataResult<List<User>>(_userDal.GetAll(), "Users listed successfully.");
+            var response = await _userDal.GetAllAsync();
+            return new SuccessDataResult<List<User>>(response, "Users listed successfully.");
         }
 
-        public IDataResult<User> GetByMail(string email)
+        public async Task<IDataResult<User>> GetByMail(string email)
         {
-            return new SuccessDataResult<User>(_userDal.Get(u => u.Email == email), "User retrieved successfully.");
+            return new SuccessDataResult<User>(await _userDal.GetAsync(u => u.Email == email), "User retrieved successfully.");
         }
 
-        public IResult Update(User user)
+        public async Task<IResult> Update(User user)
         {
-            _userDal.Update(user);
+            await _userDal.UpdateAsync(user);
             return new SuccessResult("User updated successfully.");
         }
     }

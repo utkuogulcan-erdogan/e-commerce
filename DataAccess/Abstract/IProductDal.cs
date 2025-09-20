@@ -12,5 +12,6 @@ namespace DataAccess.Abstract
     public interface IProductDal : IEntityRepository<Product>
     {
         Task<List<Product>> GetAllProductsAsync();
+        Task<Product> FindByIdAsync(Guid id);
     }
 }

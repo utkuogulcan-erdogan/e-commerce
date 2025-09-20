@@ -18,9 +18,20 @@ namespace DataAccess.Concrete.EntityFramework
         {
             using (var context = new MyShopContext())
             {
-                var query = context.Products.Include(p => p.Images);
+                var query = context.Products.AsNoTracking().Include(p => p.Images);
 
                 return await query.ToListAsync();
+            }
+        }
+
+        public async Task<Product> FindByIdAsync(Guid id)
+        {
+            using (var context = new MyShopContext())
+            {
+                return await context.Products.
+                     AsNoTracking()
+                    .Include(p => p.Images)
+                    .FirstOrDefaultAsync(p => p.Id == id);
             }
         }
     }

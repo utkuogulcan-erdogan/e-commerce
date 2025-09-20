@@ -8,5 +8,6 @@ namespace Core.Entites
 {
     public interface IEntity
     {
+        public Guid Id { get; set; }
     }
 }

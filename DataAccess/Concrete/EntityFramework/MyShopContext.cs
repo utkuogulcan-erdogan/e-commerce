@@ -17,6 +17,14 @@ namespace DataAccess.Concrete.EntityFramework
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new EfProductConfiguration());
+            modelBuilder.ApplyConfiguration(new EfProductImageConfiguration());
+            modelBuilder.ApplyConfiguration(new EfUserConfiguration());
+            modelBuilder.ApplyConfiguration(new EfOrderConfiguration());
+            modelBuilder.ApplyConfiguration(new EfOrderLineConfiguration());
+            modelBuilder.ApplyConfiguration(new EfOrderAddressConfiguration());
+            modelBuilder.ApplyConfiguration(new EfOrderPaymentConfiguration());
+            modelBuilder.ApplyConfiguration(new EfBasketConfiguration());
+            modelBuilder.ApplyConfiguration(new EfBasketLineConfiguration());
         }
 
         public DbSet<Product> Products { get; set; }

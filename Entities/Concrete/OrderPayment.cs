@@ -16,5 +16,6 @@ namespace Entities.Concrete
         public string TransactionId { get; set; }
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
+        public Order Order { get; set; } = new Order();
     }
 }

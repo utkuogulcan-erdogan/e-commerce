@@ -19,21 +19,21 @@ namespace Bussiness.Concrete
             _productDal = productDal;
         }
 
-        public IResult Add(Product product)
+        public async Task<IResult> Add(Product product)
         {
-            _productDal.Add(product);
+            await _productDal.AddAsync(product);
             return new SuccessResult("Product added successfully.");
         }
 
-        public IResult Delete(Product product)
+        public async Task<IResult> Delete(Guid id)
         {
-            _productDal.Delete(product);
+            await _productDal.DeleteAsync(id);
             return new SuccessResult("Product deleted successfully.");
         }
 
-        public IDataResult<List<Product>> GetAll()
+        public async Task<IDataResult<List<Product>>> GetAll()
         {
-            var products = _productDal.GetAll();
+            var products = await _productDal.GetAllAsync();
             return new SuccessDataResult<List<Product>>(products, "Products listed successfully.");
         }
 
@@ -43,15 +43,15 @@ namespace Bussiness.Concrete
             return new SuccessDataResult<List<Product>>(products, "Products listed successfully.");
         }
 
-        public IDataResult<Product> GetById(Guid productId)
+        public async Task<IDataResult<Product>> GetById(Guid productId)
         {
-            var product = _productDal.Get(p => p.Id == productId);
+            var product = await _productDal.FindByIdAsync(productId);
             return new SuccessDataResult<Product>(product, "Product retrieved successfully.");
         }
 
-        public IResult Update(Product product)
+        public async Task<IResult> Update(Product product)
         {
-            _productDal.Update(product);
+            await _productDal.UpdateAsync(product);
             return new SuccessResult("Product updated successfully.");
         }
     }

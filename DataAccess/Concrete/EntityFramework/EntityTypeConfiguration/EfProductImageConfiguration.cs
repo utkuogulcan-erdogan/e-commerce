@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework.EntityTypeConfiguration
 {
-    public class EfProductImageConfiguration
+    public class EfProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
     {
         public void Configure(EntityTypeBuilder<ProductImage> builder)
         {
             builder.HasKey(pi => pi.Id);
+            builder.Property(pi => pi.ProductId).IsRequired();
             builder.Property(pi => pi.Url).IsRequired().HasMaxLength(500);
             builder.Property(pi => pi.IsPrimary).IsRequired().HasDefaultValue(false);
             builder.Property(pi => pi.SortOrder).IsRequired().HasDefaultValue(0);
