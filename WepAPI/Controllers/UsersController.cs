@@ -43,7 +43,7 @@ namespace WepAPI.Controllers
             }
             return BadRequest(results);
         }
-        [HttpPost("update")]
+        [HttpPut("update")]
         public async Task<IActionResult> Update(User user)
         {
             var results = await _userService.Update(user);
@@ -53,7 +53,7 @@ namespace WepAPI.Controllers
             }
             return BadRequest(results);
         }
-        [HttpPost("delete")]
+        [HttpDelete("delete")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var results = await _userService.Delete(id);

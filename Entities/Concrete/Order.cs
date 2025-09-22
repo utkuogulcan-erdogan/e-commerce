@@ -16,8 +16,8 @@ namespace Entities.Concrete
         public int OrderStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public User User { get; set; } = new User();
-        public ICollection<OrderLine> OrderLines { get; set; } = new List<OrderLine>();
-        public OrderAddress OrderAddress { get; set; } = new OrderAddress();
-        public OrderPayment OrderPayment { get; set; } = new OrderPayment();
+        public ICollection<OrderLine> OrderLines { get; set; }
+        public OrderAddress OrderAddress { get; set; }
+        public OrderPayment OrderPayment { get; set; }
     }
 }

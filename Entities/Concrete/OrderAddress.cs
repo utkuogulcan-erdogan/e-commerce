@@ -16,6 +16,6 @@ namespace Entities.Concrete
         public string City { get; set; }
         public string Street { get; set; }
         public string PostalCode { get; set; }
-        public Order Order { get; set; } = new Order();
+        public Order Order { get; set; }
     }
 }

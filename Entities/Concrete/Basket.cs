@@ -1,5 +1,6 @@
 ﻿using Core.Entites;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace Entities.Concrete
         public Guid UserId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ExpiresAt { get; set; }
-        public User User { get; set; } = new User();
-        public ICollection<BasketLine> BasketLines { get; set; } = new List<BasketLine>();
+        public User User { get; set; }
+        public ICollection<BasketLine> BasketLines { get; set; }
     }
 }

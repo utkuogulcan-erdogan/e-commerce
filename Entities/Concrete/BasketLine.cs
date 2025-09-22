@@ -13,7 +13,7 @@ namespace Entities.Concrete
         public Guid BasketId { get; set; }
         public Guid ProductId { get; set; }
         public int Quantity { get; set; }
-        public Basket Basket { get; set; } = new Basket();
-        public Product Product { get; set; } = new Product();
+        public Basket Basket { get; set; }
+        public Product Product { get; set; }
     }
 }

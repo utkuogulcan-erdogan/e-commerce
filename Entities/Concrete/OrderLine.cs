@@ -16,7 +16,7 @@ namespace Entities.Concrete
         public string ProductName { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal LineTotal { get; set; }
-        public Order Order { get; set; } = new Order();
-        public Product Product { get; set; } = new Product();
+        public Order Order { get; set; }
+        public Product Product { get; set; }
     }
 }

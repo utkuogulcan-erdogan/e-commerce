@@ -10,5 +10,7 @@ namespace DataAccess.Abstract
 {
     public interface IBasketDal : IEntityRepository<Basket>
     {
+        Task<List<Basket>> GetAllBasketsDetailedAsync();
+        Task<Basket> GetDetailedBasketByUserIdAsync(Guid userId);
     }
 }

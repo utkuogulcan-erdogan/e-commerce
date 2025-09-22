@@ -15,7 +15,7 @@ namespace Entities.Concrete
         public string PasswordHash { get; set; }    
         public string FullName { get; set; }
         public DateTime CreatedAt { get; set; }
-        public Basket Basket { get; set; } = new Basket();
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
+        public Basket Basket { get; set; }
+        public ICollection<Order> Orders { get; set; }
     }
 }
