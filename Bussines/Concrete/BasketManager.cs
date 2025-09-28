@@ -3,6 +3,7 @@ using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
+using Entities.DTO_s;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,42 +25,20 @@ namespace Bussiness.Concrete
             return new SuccessResult("Basket created successfully.");
         }
 
-        public async Task<IResult> Delete(Guid id)
+        public async Task<IDataResult<List<BasketDto>>> GetAllBasketsDetailedAsync()
         {
-            await _basketDal.DeleteAsync(id);
-            return new SuccessResult("Basket deleted successfully.");
+            return new SuccessDataResult<List<BasketDto>>(await _basketDal.GetAllBasketsDetailedAsync(), "Detailed baskets retrieved successfully.");
         }
 
-        public async Task<IDataResult<List<Basket>>> GetAll()
+        public async Task<IDataResult<BasketDto>> GetDetailedBasketByIdAsync(Guid id)
         {
-            var results = await _basketDal.GetAllAsync();
-            return new SuccessDataResult<List<Basket>>(results, "Baskets listed successfully.");
+            return new SuccessDataResult<BasketDto>(await _basketDal.GetDetailedBasketByIdAsync(id), "Basket retrieved successfully.");
         }
 
-        public async Task<IDataResult<List<Basket>>> GetAllBasketsDetailedAsync()
+        public async Task<IDataResult<BasketDto>> GetDetailedBasketByUserIdAsync(Guid id)
         {
-            return new SuccessDataResult<List<Basket>>(await _basketDal.GetAllBasketsDetailedAsync(), "Detailed baskets retrieved successfully.");
+            return new SuccessDataResult<BasketDto>(await _basketDal.GetDetailedBasketByUserIdAsync(id), "Detailed basket retrieved successfully.");
         }
 
-        public async Task<IDataResult<Basket>> GetById(Guid id)
-        {
-            return new SuccessDataResult<Basket>(await _basketDal.GetAsync(b => b.Id == id), "Basket retrieved successfully.");
-        }
-
-        public async Task<IDataResult<Basket>> GetByUserId(Guid userId)
-        {
-            return new SuccessDataResult<Basket>(await _basketDal.GetAsync(b =>b.User.Id == userId), "Basket retrieved successfully.");
-        }
-
-        public async Task<IDataResult<Basket>> GetDetailedBasketByUserIdAsync(Guid id)
-        {
-            return new SuccessDataResult<Basket>(await _basketDal.GetDetailedBasketByUserIdAsync(id), "Detailed basket retrieved successfully.");
-        }
-
-        public async Task<IResult> Update(Basket basket)
-        {
-            await _basketDal.UpdateAsync(basket);
-            return new SuccessResult("Basket updated successfully.");
-        }
     }
 }

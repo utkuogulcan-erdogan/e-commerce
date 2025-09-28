@@ -23,8 +23,8 @@ namespace WepAPI.Controllers
             }
             return BadRequest(results);
         }
-        [HttpGet("getbymail")]
-        public async Task<IActionResult> GetByMail(string email)
+        [HttpGet("by-email/{email}")]
+        public async Task<IActionResult> GetByMail([FromRoute] string email)
         {
             var results = await _userService.GetByMail(email);
             if (results.Success)
@@ -33,8 +33,8 @@ namespace WepAPI.Controllers
             }
             return BadRequest(results);
         }
-        [HttpPost("add")]
-        public async Task<IActionResult> Add(User user)
+        [HttpPost]
+        public async Task<IActionResult> Add([FromRoute] User user)
         {
             var results = await _userService.Add(user);
             if (results.Success)
@@ -43,8 +43,8 @@ namespace WepAPI.Controllers
             }
             return BadRequest(results);
         }
-        [HttpPut("update")]
-        public async Task<IActionResult> Update(User user)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id,[FromBody] User user)
         {
             var results = await _userService.Update(user);
             if (results.Success)
@@ -53,8 +53,8 @@ namespace WepAPI.Controllers
             }
             return BadRequest(results);
         }
-        [HttpDelete("delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var results = await _userService.Delete(id);
             if (results.Success)

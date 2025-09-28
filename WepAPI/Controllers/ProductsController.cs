@@ -16,19 +16,9 @@ namespace WepAPI.Controllers
         {
             _productService = productService;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
-        {
-            var result = await _productService.GetAll();
-            if (result.Success)
-            {
-                return Ok(result.Data);
-            }
-            return BadRequest(result);
-        }
-
-        [HttpGet("getAllProducts")]
-        public async Task<IActionResult> GetAllProducts()
         {
             var result = await _productService.GetAllProductsAsync();
             if (result.Success)
@@ -38,10 +28,10 @@ namespace WepAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpGet("getbyid")]
-        public async Task<IActionResult> GetById(Guid productId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var result = await _productService.GetById(productId);
+            var result = await _productService.GetById(id);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -49,8 +39,8 @@ namespace WepAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpPost("add")]
-        public async Task<IActionResult> Add(Product product)
+        [HttpPost]
+        public async Task<IActionResult> Add([FromBody] Product product)
         {
             var result = await _productService.Add(product);
             if (result.Success)
@@ -60,8 +50,8 @@ namespace WepAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpPut("update")]
-        public async Task<IActionResult> Update(Product product)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] Product product)
         {
             var result = await _productService.Update(product);
             if (result.Success)
@@ -71,8 +61,8 @@ namespace WepAPI.Controllers
             return BadRequest(result);
         }
 
-        [HttpDelete("delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             var result = await _productService.Delete(id);
             if (result.Success)

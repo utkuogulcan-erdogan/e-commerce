@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Entities.DTO_s
 {
-    public class ProductDTO : IDto
+    public class ProductDto : IDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -16,6 +16,6 @@ namespace Entities.DTO_s
         public decimal Price { get; set; }
         public int Stock { get; set; }
         public string CategoryName { get; set; }
-        public List<ProductImage> Images { get; set; }
+        public List<ProductImageDto> Images { get; set; }
     }
 }

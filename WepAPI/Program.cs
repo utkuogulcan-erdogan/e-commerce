@@ -17,6 +17,8 @@ builder.Services.AddScoped<IUserDal, EfUserDal>();
 builder.Services.AddScoped<IUserService, UserManager>();
 builder.Services.AddScoped<IBasketDal, EfBasketDal>();
 builder.Services.AddScoped<IBasketService, BasketManager>();
+builder.Services.AddScoped<IBasketLineDal, EfBasketLineDal>();
+builder.Services.AddScoped<IBasketLineService, BasketLineManager>();
 builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.
     ReferenceHandler = ReferenceHandler.IgnoreCycles

@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results;
 using Entities.Concrete;
+using Entities.DTO_s;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,9 @@ namespace Bussiness.Abstract
 {
     public interface IBasketService
     {
-        Task<IDataResult<List<Basket>>> GetAll();
-        Task<IDataResult<List<Basket>>> GetAllBasketsDetailedAsync();
-        Task<IDataResult<Basket>> GetDetailedBasketByUserIdAsync(Guid id);
-        Task<IDataResult<Basket>> GetById(Guid id);
-        Task<IDataResult<Basket>> GetByUserId(Guid userId);
+        Task<IDataResult<List<BasketDto>>> GetAllBasketsDetailedAsync();
+        Task<IDataResult<BasketDto>> GetDetailedBasketByUserIdAsync(Guid id);
+        Task<IDataResult<BasketDto>> GetDetailedBasketByIdAsync(Guid id);
         Task<IResult> Add(Guid userId);
-        Task<IResult> Update(Basket basket);
-        Task<IResult> Delete(Guid id);
     }
 }

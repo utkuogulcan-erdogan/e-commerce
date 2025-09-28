@@ -1,5 +1,6 @@
 ﻿using Core.DataAccess;
 using Entities.Concrete;
+using Entities.DTO_s;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,8 @@ namespace DataAccess.Abstract
 {
     public interface IBasketDal : IEntityRepository<Basket>
     {
-        Task<List<Basket>> GetAllBasketsDetailedAsync();
-        Task<Basket> GetDetailedBasketByUserIdAsync(Guid userId);
+        Task<List<BasketDto>> GetAllBasketsDetailedAsync();
+        Task<BasketDto> GetDetailedBasketByUserIdAsync(Guid userId);
+        Task<BasketDto> GetDetailedBasketByIdAsync(Guid id);
     }
 }
