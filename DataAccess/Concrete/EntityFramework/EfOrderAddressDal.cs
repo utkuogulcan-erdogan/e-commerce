@@ -6,5 +6,8 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfOrderAddressDal : EfEntityRepositoryBase<OrderAddress, MyShopContext>, IOrderAddressDal
     {
+        public EfOrderAddressDal(MyShopContext context) : base(context)
+        {
+        }
     }
 }

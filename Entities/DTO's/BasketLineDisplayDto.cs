@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Entities.DTO_s
 {
-    public class BasketLineDto : IDto
+    public class BasketLineDisplayDto : IDto
     {
         public Guid Id { get; set; }
         public Guid BasketId { get; set; }
         public Guid ProductId { get; set; }
         public int Quantity { get; set; }
-        public ProductDto Product { get; set; }
+        public ProductDisplayDto Product { get; set; }
     }
 }

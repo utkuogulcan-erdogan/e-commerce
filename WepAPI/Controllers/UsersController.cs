@@ -1,5 +1,6 @@
 ﻿using Bussiness.Abstract;
 using Entities.Concrete;
+using Entities.DTO_s;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +25,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("by-email/{email}")]
-        public async Task<IActionResult> GetByMail([FromRoute] string email)
+        public async Task<IActionResult> GetByMail(string email)
         {
             var results = await _userService.GetByMail(email);
             if (results.Success)
@@ -34,7 +35,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpPost]
-        public async Task<IActionResult> Add([FromRoute] User user)
+        public async Task<IActionResult> Add(UserAddDto user)
         {
             var results = await _userService.Add(user);
             if (results.Success)
@@ -44,9 +45,9 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id,[FromBody] User user)
+        public async Task<IActionResult> Update(Guid id, UserUpdateDto user)
         {
-            var results = await _userService.Update(user);
+            var results = await _userService.Update(id, user);
             if (results.Success)
             {
                 return Ok(results);
@@ -54,7 +55,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var results = await _userService.Delete(id);
             if (results.Success)

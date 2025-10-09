@@ -8,30 +8,31 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfBasketDal : EfEntityRepositoryBase<Basket, MyShopContext>, IBasketDal
     {
-        public async Task<List<BasketDto>> GetAllBasketsDetailedAsync()
+        public EfBasketDal(MyShopContext context) : base(context)
         {
-            using (var context = new MyShopContext())
-            {
+        }
+        public async Task<List<BasketDisplayDto>> GetAllBasketsDetailedAsync()
+        {
                 var result = await (
-                    from basket in context.Baskets
-                    join basketLine in context.BasketLines
+                    from basket in _context.Baskets
+                    join basketLine in _context.BasketLines
                         on basket.Id equals basketLine.BasketId into basketLinesGroup
 
-                    select new BasketDto
+                    select new BasketDisplayDto
                     {
                         Id = basket.Id,
                         UserId = basket.UserId,
                         CreatedAt = basket.CreatedAt,
                         ExpiresAt = basket.ExpiresAt,
 
-                        BasketLines = basketLinesGroup.Select(bl => new BasketLineDto
+                        BasketLines = basketLinesGroup.Select(bl => new BasketLineDisplayDto
                         {
                             Id = bl.Id,
                             BasketId = bl.BasketId,
                             ProductId = bl.ProductId,
                             Quantity = bl.Quantity,
 
-                            Product = new ProductDto
+                            Product = new ProductDisplayDto
                             {
                                 Id = bl.Product.Id,
                                 Name = bl.Product.Name,
@@ -54,32 +55,29 @@ namespace DataAccess.Concrete.EntityFramework
 
                 return result;
             }
-        }
 
-        public async Task<BasketDto> GetDetailedBasketByIdAsync(Guid id)
+        public async Task<BasketDisplayDto> GetDetailedBasketByIdAsync(Guid id)
         {
-            using (var context = new MyShopContext())
-            {
                 var result = await (
-                    from basket in context.Baskets
+                    from basket in _context.Baskets
                     where basket.Id == id
-                    join basketLine in context.BasketLines
+                    join basketLine in _context.BasketLines
                         on basket.Id equals basketLine.BasketId into basketLinesGroup
-                    select new BasketDto
+                    select new BasketDisplayDto
                     {
                         Id = basket.Id,
                         UserId = basket.UserId,
                         CreatedAt = basket.CreatedAt,
                         ExpiresAt = basket.ExpiresAt,
 
-                        BasketLines = basketLinesGroup.Select(bl => new BasketLineDto
+                        BasketLines = basketLinesGroup.Select(bl => new BasketLineDisplayDto
                         {
                             Id = bl.Id,
                             BasketId = bl.BasketId,
                             ProductId = bl.ProductId,
                             Quantity = bl.Quantity,
 
-                            Product = new ProductDto
+                            Product = new ProductDisplayDto
                             {
                                 Id = bl.Product.Id,
                                 Name = bl.Product.Name,
@@ -102,32 +100,29 @@ namespace DataAccess.Concrete.EntityFramework
 
                 return result;
             }
-        }
 
-        public async Task<BasketDto> GetDetailedBasketByUserIdAsync(Guid userId)
+        public async Task<BasketDisplayDto> GetDetailedBasketByUserIdAsync(Guid userId)
         {
-            using (var context = new MyShopContext())
-            {
                 var result = await (
-                    from basket in context.Baskets
+                    from basket in _context.Baskets
                     where basket.UserId == userId
-                    join basketLine in context.BasketLines
+                    join basketLine in _context.BasketLines
                          on basket.Id equals basketLine.BasketId into basketLinesGroup
-                    select new BasketDto
+                    select new BasketDisplayDto
                     {
                         Id = basket.Id,
                         UserId = basket.UserId,
                         CreatedAt = basket.CreatedAt,
                         ExpiresAt = basket.ExpiresAt,
 
-                        BasketLines = basketLinesGroup.Select(bl => new BasketLineDto
+                        BasketLines = basketLinesGroup.Select(bl => new BasketLineDisplayDto
                         {
                             Id = bl.Id,
                             BasketId = bl.BasketId,
                             ProductId = bl.ProductId,
                             Quantity = bl.Quantity,
 
-                            Product = new ProductDto
+                            Product = new ProductDisplayDto
                             {
                                 Id = bl.Product.Id,
                                 Name = bl.Product.Name,
@@ -152,4 +147,3 @@ namespace DataAccess.Concrete.EntityFramework
         }
 
     }
-}

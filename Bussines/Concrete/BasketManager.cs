@@ -25,19 +25,19 @@ namespace Bussiness.Concrete
             return new SuccessResult("Basket created successfully.");
         }
 
-        public async Task<IDataResult<List<BasketDto>>> GetAllBasketsDetailedAsync()
+        public async Task<IDataResult<List<BasketDisplayDto>>> GetAllBasketsDetailedAsync()
         {
-            return new SuccessDataResult<List<BasketDto>>(await _basketDal.GetAllBasketsDetailedAsync(), "Detailed baskets retrieved successfully.");
+            return new SuccessDataResult<List<BasketDisplayDto>>(await _basketDal.GetAllBasketsDetailedAsync(), "Detailed baskets retrieved successfully.");
         }
 
-        public async Task<IDataResult<BasketDto>> GetDetailedBasketByIdAsync(Guid id)
+        public async Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByIdAsync(Guid id)
         {
-            return new SuccessDataResult<BasketDto>(await _basketDal.GetDetailedBasketByIdAsync(id), "Basket retrieved successfully.");
+            return new SuccessDataResult<BasketDisplayDto>(await _basketDal.GetDetailedBasketByIdAsync(id), "Basket retrieved successfully.");
         }
 
-        public async Task<IDataResult<BasketDto>> GetDetailedBasketByUserIdAsync(Guid id)
+        public async Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByUserIdAsync(Guid id)
         {
-            return new SuccessDataResult<BasketDto>(await _basketDal.GetDetailedBasketByUserIdAsync(id), "Detailed basket retrieved successfully.");
+            return new SuccessDataResult<BasketDisplayDto>(await _basketDal.GetDetailedBasketByUserIdAsync(id), "Detailed basket retrieved successfully.");
         }
 
     }

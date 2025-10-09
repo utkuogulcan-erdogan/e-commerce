@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Entities.DTO_s
 {
-    public class BasketDto : IDto
+    public class BasketDisplayDto : IDto
     {
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ExpiresAt { get; set; }
-        public List<BasketLineDto> BasketLines { get; set; }
+        public List<BasketLineDisplayDto> BasketLines { get; set; }
     }
 }

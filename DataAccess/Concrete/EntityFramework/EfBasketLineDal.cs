@@ -6,5 +6,8 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfBasketLineDal : EfEntityRepositoryBase<BasketLine, MyShopContext>, IBasketLineDal
     {
+        public EfBasketLineDal(MyShopContext context) : base(context)
+        {
+        }
     }
 }

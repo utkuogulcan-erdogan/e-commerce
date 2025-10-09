@@ -1,6 +1,7 @@
 ﻿using Bussiness.Abstract;
 using Bussiness.Concrete;
 using Entities.Concrete;
+using Entities.DTO_s;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -29,7 +30,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _productService.GetById(id);
             if (result.Success)
@@ -40,9 +41,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] Product product)
+        public async Task<IActionResult> Add(ProductAddDto productAddDto)
         {
-            var result = await _productService.Add(product);
+            var result = await _productService.Add(productAddDto);
             if (result.Success)
             {
                 return Ok(result);
@@ -51,9 +52,10 @@ namespace WepAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] Product product)
+        public async Task<IActionResult> Update(Guid id,ProductUpdateDto product)
         {
-            var result = await _productService.Update(product);
+            
+            var result = await _productService.Update(id,product);
             if (result.Success)
             {
                 return Ok(result);
@@ -62,7 +64,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromRoute] Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _productService.Delete(id);
             if (result.Success)

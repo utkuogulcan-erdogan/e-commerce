@@ -28,7 +28,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var results = await _basketService.GetDetailedBasketByIdAsync(id);
             if (results.Success)
@@ -38,7 +38,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUserId([FromRoute] Guid userId)
+        public async Task<IActionResult> GetByUserId(Guid userId)
         {
             var results = await _basketService.GetDetailedBasketByUserIdAsync(userId);
             if (results.Success)
@@ -49,7 +49,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpPost("users/{userId}/products/{productId}/quantity/{quantity}")]
-        public async Task<IActionResult> AddProductToBasketAsync([FromRoute] Guid userId, [FromRoute] Guid productId, [FromRoute] int quantity)
+        public async Task<IActionResult> AddProductToBasketAsync(Guid userId,Guid productId, int quantity)
         {
             var results = await _basketLineService.AddProductToBasketAsync(userId, productId, quantity);
             if (results.Success)
@@ -60,7 +60,7 @@ namespace WepAPI.Controllers
 
         }
         [HttpDelete("users/{userId}/products/{productId}")]
-        public async Task<IActionResult> RemoveProductFromBasketAsync([FromRoute] Guid userId, [FromRoute] Guid productId)
+        public async Task<IActionResult> RemoveProductFromBasketAsync(Guid userId, Guid productId)
         {
             var results = await _basketLineService.RemoveProductFromBasketAsync(userId, productId);
             if (results.Success)
@@ -70,7 +70,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpPut("users/{userId}/products/{productId}/quantity/{quantity}")]
-        public async Task<IActionResult> UpdateProductQuantityAsync([FromRoute] Guid userId, [FromRoute] Guid productId, [FromRoute] int quantity)
+        public async Task<IActionResult> UpdateProductQuantityAsync(Guid userId, Guid productId, int quantity)
         {
             var results = await _basketLineService.UpdateProductQuantityAsync(userId, productId, quantity);
             if (results.Success)

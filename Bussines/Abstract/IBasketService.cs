@@ -11,9 +11,9 @@ namespace Bussiness.Abstract
 {
     public interface IBasketService
     {
-        Task<IDataResult<List<BasketDto>>> GetAllBasketsDetailedAsync();
-        Task<IDataResult<BasketDto>> GetDetailedBasketByUserIdAsync(Guid id);
-        Task<IDataResult<BasketDto>> GetDetailedBasketByIdAsync(Guid id);
+        Task<IDataResult<List<BasketDisplayDto>>> GetAllBasketsDetailedAsync();
+        Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByUserIdAsync(Guid id);
+        Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByIdAsync(Guid id);
         Task<IResult> Add(Guid userId);
     }
 }

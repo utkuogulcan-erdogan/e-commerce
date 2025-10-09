@@ -3,36 +3,45 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTO_s;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Concrete.EntityFramework
 {
     public class EfProductDal : EfEntityRepositoryBase<Product, MyShopContext>, IProductDal
     {
-        
-        public async Task<List<Product>> GetAllProductsAsync()
+        public EfProductDal(MyShopContext context) : base(context)
         {
-            using (var context = new MyShopContext())
-            {
-                var query = context.Products.AsNoTracking().Include(p => p.Images);
+        }
 
-                return await query.ToListAsync();
-            }
+        public async Task<List<ProductDisplayDto>> GetAllProductsAsync()
+        {
+            return await _context.Products
+                .Include(p => p.Images)
+                .Select(p => new ProductDisplayDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    Stock = p.Stock,
+                    CategoryName = p.CategoryId.HasValue ? "" : "",
+                    Images = p.Images.Select(i => new ProductImageDto
+                    {
+                        Id = i.Id,
+                        ProductId = i.ProductId,
+                        ImageUrl = i.Url,
+                        SortOrder = i.SortOrder,
+                        IsPrimary = i.IsPrimary
+                    }).ToList()
+                })
+                .ToListAsync();
         }
 
         public async Task<Product> FindByIdAsync(Guid id)
         {
-            using (var context = new MyShopContext())
-            {
-                return await context.Products.
-                     AsNoTracking()
-                    .Include(p => p.Images)
-                    .FirstOrDefaultAsync(p => p.Id == id);
-            }
+            return await _context.Products
+                .AsNoTracking()
+                .Include(p => p.Images)
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
     }
 }

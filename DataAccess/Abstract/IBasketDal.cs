@@ -11,8 +11,8 @@ namespace DataAccess.Abstract
 {
     public interface IBasketDal : IEntityRepository<Basket>
     {
-        Task<List<BasketDto>> GetAllBasketsDetailedAsync();
-        Task<BasketDto> GetDetailedBasketByUserIdAsync(Guid userId);
-        Task<BasketDto> GetDetailedBasketByIdAsync(Guid id);
+        Task<List<BasketDisplayDto>> GetAllBasketsDetailedAsync();
+        Task<BasketDisplayDto> GetDetailedBasketByUserIdAsync(Guid userId);
+        Task<BasketDisplayDto> GetDetailedBasketByIdAsync(Guid id);
     }
 }

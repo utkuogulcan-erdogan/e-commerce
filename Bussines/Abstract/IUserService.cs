@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Results;
 using Entities.Concrete;
+using Entities.DTO_s;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,10 @@ namespace Bussiness.Abstract
     public interface IUserService
     {
         //IDataResult<List<OperationClaim>> GetClaims(User user);
-        Task<IDataResult<User>> GetByMail(string email);
-        Task<IResult> Add(User user);
-        Task<IResult> Update(User user);
+        Task<IDataResult<UserDisplayDto>> GetByMail(string email);
+        Task<IResult> Add(UserAddDto user);
+        Task<IResult> Update(Guid id, UserUpdateDto user);
         Task<IResult> Delete(Guid id);
-        Task<IDataResult<List<User>>> GetAll();
+        Task<IDataResult<List<UserDisplayDto>>> GetAll();
     }
 }

@@ -6,5 +6,8 @@ namespace DataAccess.Concrete.EntityFramework
 {
     public class EfProductImageDal : EfEntityRepositoryBase<ProductImage, MyShopContext>, IProductImageDal
     {
+        public EfProductImageDal(MyShopContext context) : base(context)
+        {
+        }
     }
 }
