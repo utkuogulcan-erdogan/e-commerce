@@ -31,7 +31,8 @@ namespace Bussiness.Concrete
             }
             if (basket == null)
             {
-                throw new Exception("Basket not found");
+                await _basketDal.AddAsync(new Basket { UserId = userId });
+                basket = await _basketDal.GetDetailedBasketByUserIdAsync(userId);
             }
             var basketLine = (await _basketLine.GetAllAsync(bl => bl.BasketId == basket.Id && bl.ProductId == productId)).FirstOrDefault();
             if (basketLine != null)

@@ -24,6 +24,11 @@ builder.Services.AddScoped<IBasketService, BasketManager>();
 builder.Services.AddScoped<IBasketLineDal, EfBasketLineDal>();
 builder.Services.AddScoped<IBasketLineService, BasketLineManager>();
 builder.Services.AddScoped<IHashingHelper, HashingHelper>();
+builder.Services.AddScoped<IOrderDal, EfOrderDal>();
+builder.Services.AddScoped<IOrderService, OrderManager>();
+builder.Services.AddScoped<IOrderAddressService, OrderAddressManager>();
+builder.Services.AddScoped<IOrderAddressDal, EfOrderAddressDal>();
+builder.Services.AddScoped<IOrderPaymentDal, EfOrderPaymentDal>();
 builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.
     ReferenceHandler = ReferenceHandler.IgnoreCycles

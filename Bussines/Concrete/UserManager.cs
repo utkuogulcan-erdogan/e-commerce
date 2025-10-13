@@ -17,7 +17,7 @@ namespace Bussiness.Concrete
     {
         IUserDal _userDal;
         IHashingHelper _hashingHelper;
-        public UserManager(IUserDal userDal,IHashingHelper hashingHelper) { 
+        public UserManager(IUserDal userDal,IHashingHelper hashingHelper, IBasketDal basketDal) { 
             _userDal = userDal;
             _hashingHelper = hashingHelper;
         }
@@ -25,7 +25,7 @@ namespace Bussiness.Concrete
         public async Task<IResult> Add(UserAddDto user)
         {
             _hashingHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            await _userDal.AddUserAsync(user, passwordHash);
+            await _userDal.AddUserAsync(user, passwordHash, passwordSalt);
             return new SuccessResult("User added successfully.");
         }
 
@@ -69,6 +69,7 @@ namespace Bussiness.Concrete
             {
                 _hashingHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
                 existingUser.PasswordHash = passwordHash;
+                existingUser.PasswordSalt = passwordSalt;
             }
             await _userDal.UpdateAsync(existingUser);
             return new SuccessResult("User updated successfully.");

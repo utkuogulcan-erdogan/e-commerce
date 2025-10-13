@@ -20,7 +20,10 @@ namespace DataAccess.Concrete.EntityFramework.EntityTypeConfiguration
             builder.Property(oa => oa.City).IsRequired().HasMaxLength(200);
             builder.Property(oa => oa.Country).IsRequired().HasMaxLength(100);
             builder.Property(oa => oa.PostalCode).IsRequired().HasMaxLength(50);
-            builder.HasOne(oa => oa.Order).WithOne(o => o.OrderAddress).HasForeignKey<OrderAddress>(oa => oa.OrderId);
+            builder.HasOne(oa => oa.Order)
+                .WithMany(o => o.OrderAddresses)
+                .HasForeignKey(oa => oa.OrderId);
+
         }
     }
 }

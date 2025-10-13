@@ -19,7 +19,10 @@ namespace DataAccess.Concrete.EntityFramework.EntityTypeConfiguration
             builder.Property(ol => ol.ProductName).IsRequired().HasMaxLength(200);
             builder.Property(ol => ol.Quantity).IsRequired();
             builder.Property(ol => ol.UnitPrice).IsRequired().HasColumnType("decimal(18,2)");
-            builder.Property(ol => ol.LineTotal).IsRequired().HasColumnType("decimal(18,2)");
+            builder.Property(ol => ol.LineTotal)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)")
+                .HasComputedColumnSql("[Quantity] * [UnitPrice]"); 
             builder.HasOne(ol => ol.Order).WithMany(o => o.OrderLines).HasForeignKey(ol => ol.OrderId);
             builder.HasOne(ol => ol.Product).WithMany(p => p.OrderLines).HasForeignKey(ol => ol.ProductId);
 
