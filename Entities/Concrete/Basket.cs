@@ -16,5 +16,17 @@ namespace Entities.Concrete
         public DateTime ExpiresAt { get; set; }
         public User User { get; set; }
         public ICollection<BasketLine> BasketLines { get; set; }
+
+        public static Basket CreateBasket(Guid userId)
+        {
+            return new Basket
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                BasketLines = new List<BasketLine>()
+            };
+        }
     }
 }

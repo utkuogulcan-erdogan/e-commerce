@@ -10,5 +10,6 @@ namespace DataAccess.Abstract
 {
     public interface IBasketLineDal : IEntityRepository<BasketLine>
     {
+        Task ClearBasketLinesAsync(Guid basketId);
     }
 }

@@ -13,7 +13,6 @@ namespace DataAccess.Abstract
     {
         public Task<List<UserDisplayDto>> GetAllUserAsync();
         public Task<UserDisplayDto> GetUserAsync(string email);
-        public Task AddUserAsync(UserAddDto user, byte[] passwordHash, byte[] passwordSalt);
 
     }
 }

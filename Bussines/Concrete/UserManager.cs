@@ -17,7 +17,8 @@ namespace Bussiness.Concrete
     {
         IUserDal _userDal;
         IHashingHelper _hashingHelper;
-        public UserManager(IUserDal userDal,IHashingHelper hashingHelper, IBasketDal basketDal) { 
+        public UserManager(IUserDal userDal, IHashingHelper hashingHelper)
+        {
             _userDal = userDal;
             _hashingHelper = hashingHelper;
         }
@@ -25,7 +26,12 @@ namespace Bussiness.Concrete
         public async Task<IResult> Add(UserAddDto user)
         {
             _hashingHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            await _userDal.AddUserAsync(user, passwordHash, passwordSalt);
+            var newUser = User.CreateUser(
+                user,
+                passwordHash,
+                passwordSalt
+            );
+            await _userDal.AddAsync(newUser);
             return new SuccessResult("User added successfully.");
         }
 
@@ -49,29 +55,20 @@ namespace Bussiness.Concrete
         public async Task<IResult> Update(Guid id, UserUpdateDto user)
         {
             var existingUser = await _userDal.GetAsync(u => u.Id == id);
-            if (existingUser == null)
+            if (user == null)
             {
                 return new ErrorResult("User not found.");
             }
-            if (!string.IsNullOrWhiteSpace(user.FullName))
-            {
-                existingUser.FullName = user.FullName;
-            }
-            if (!string.IsNullOrWhiteSpace(user.UserName))
-            {
-                existingUser.UserName = user.UserName;
-            }
-            if (!string.IsNullOrWhiteSpace(user.Email))
-            {
-                existingUser.Email = user.Email;
-            }
-            if (!string.IsNullOrWhiteSpace(user.Password))
+            var userPasswordHash = existingUser.PasswordHash;
+            var userPasswordSalt = existingUser.PasswordSalt;
+            if (!string.IsNullOrEmpty(user.Password))
             {
                 _hashingHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                existingUser.PasswordHash = passwordHash;
-                existingUser.PasswordSalt = passwordSalt;
+                userPasswordHash = passwordHash;
+                userPasswordSalt = passwordSalt;
             }
-            await _userDal.UpdateAsync(existingUser);
+            var updatedUser = User.UpdateUser(existingUser, userPasswordHash, userPasswordSalt, user);
+            await _userDal.UpdateAsync(updatedUser);
             return new SuccessResult("User updated successfully.");
         }
     }

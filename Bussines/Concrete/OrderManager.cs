@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Bussiness.Concrete
 {
@@ -19,12 +20,14 @@ namespace Bussiness.Concrete
         IBasketDal _basketDal;
         IOrderAddressService _orderAddressService;
         IOrderPaymentDal _orderPaymentDal;
-        public OrderManager(IOrderDal orderDal, IBasketDal basketDal, IOrderAddressService orderAddressService,IOrderPaymentDal orderPaymentDal)
+        IBasketLineDal _basketLineDal;
+        public OrderManager(IOrderDal orderDal, IBasketDal basketDal, IOrderAddressService orderAddressService,IOrderPaymentDal orderPaymentDal, IBasketLineDal basketLineDal)
         {
             _orderDal = orderDal;
             _basketDal = basketDal;
             _orderAddressService = orderAddressService;
             _orderPaymentDal = orderPaymentDal;
+            _basketLineDal = basketLineDal;
         }
         public async Task<IDataResult<List<OrderDisplayDto>>> GetAllAsync()
         {
@@ -43,69 +46,32 @@ namespace Bussiness.Concrete
 
         public async Task<IResult> CreateOrderAsync(Guid userId, OrderCreateDto dto)
         {
-            var basket = await _basketDal.GetDetailedBasketByUserIdAsync(userId);
-            if (basket == null || !basket.BasketLines.Any())
+            var basket = await _basketDal.GetAsync(basket => basket.UserId == userId);
+            if (basket == null || basket.BasketLines.Count() != 0)
                 return new ErrorDataResult<OrderDisplayDto>("Basket is empty.");
 
-            var order = new Order
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                OrderDate = DateTime.UtcNow,
-                CreatedAt = DateTime.UtcNow,
-                OrderStatus = (int)OrderStatus.ReadyForPayment,
-                TotalAmount = basket.BasketLines.Sum(bl => bl.Quantity * bl.Product.Price),
-                OrderLines = basket.BasketLines.Select(bl => new OrderLine
-                {
-                    Id = Guid.NewGuid(),
-                    ProductId = bl.ProductId,
-                    ProductName = bl.Product.Name,
-                    Quantity = bl.Quantity,
-                    UnitPrice = bl.Product.Price,
-                }).ToList()
-            };
+            var order = Order.CreateOrder(userId, basket);
 
-            if (dto.ShippingAddress != null)
-            {
-                order.OrderAddresses = new List<OrderAddress>
-                    {
-                        new OrderAddress
-                        {
-                            Id = Guid.NewGuid(),
-                            OrderId = order.Id,
-                            AddressType = AddressType.Shipping.ToString(),
-                            Street = dto.ShippingAddress.Street,
-                            City = dto.ShippingAddress.City,
-                            Country = dto.ShippingAddress.Country,
-                            PostalCode = dto.ShippingAddress.PostalCode,
-                        }
-                    };
-            }
-            else
+            if(dto.ShippingAddress == null)
             {
                 return new ErrorResult("Shipping address is required.");
             }
-            if (dto.BillingAddress != null)
-            {
-                if (order.OrderAddresses == null)
-                    order.OrderAddresses = new List<OrderAddress>();
-                order.OrderAddresses.Add(new OrderAddress
-                {
-                    Id = Guid.NewGuid(),
-                    OrderId = order.Id,
-                    AddressType = AddressType.Billing.ToString(),
-                    Street = dto.BillingAddress.Street,
-                    City = dto.BillingAddress.City,
-                    Country = dto.BillingAddress.Country,
-                    PostalCode = dto.BillingAddress.PostalCode,
-                });
-            }
-            else
+
+            var shippingAddress = OrderAddress.CreateOrderAddress(order.Id, dto.ShippingAddress);
+            order.AddOrderAddress(shippingAddress);
+
+            if (dto.BillingAddress == null)
             {
                 return new ErrorResult("Billing address is required.");
             }
+
+            var billingAddress = OrderAddress.CreateOrderAddress(order.Id, dto.BillingAddress);
+            order.AddOrderAddress(billingAddress);
+
+            using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await _orderDal.AddAsync(order);
-            await _basketDal.DeleteAsync(basket.Id);
+            await _basketLineDal.ClearBasketLinesAsync(basket.Id);
+            scope.Complete();
             return new SuccessResult("Order created successfully.");
         }
 
@@ -117,7 +83,7 @@ namespace Bussiness.Concrete
             if (order.UserId != userId)
                 return new ErrorResult("Unauthorized access.");
 
-            order.OrderStatus = dto.Status;
+            order = Order.UpdateOrderStatus(order, dto);
             await _orderDal.UpdateAsync(order);
             return new SuccessResult("Order status updated successfully.");
         }
@@ -133,26 +99,26 @@ namespace Bussiness.Concrete
 
             if ((PaymentStatus)dto.Status != PaymentStatus.Completed)
             {
-                order.OrderStatus = (int)OrderStatus.Failed;
+                order = Order.UpdateOrderStatus(order, new OrderUpdateStatusDto
+                {
+                    OrderId = order.Id,
+                    Status = (int)OrderStatus.Failed,
+                });
                 await _orderDal.UpdateAsync(order);
                 return new ErrorResult("Payment failed.");
             }
 
-            var payment = new OrderPayment
-            {
-                Id = Guid.NewGuid(),
-                OrderId = order.Id,
-                Amount = order.TotalAmount,
-                Provider = dto.Provider,
-                TransactionId = dto.TransactionId,
-                Status = (int)PaymentStatus.Completed,
-                CreatedAt = DateTime.UtcNow
-            };
+            var payment = OrderPayment.CreateOrderPayment(order.Id, dto);
 
+            using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await _orderPaymentDal.AddAsync(payment);
-            order.OrderStatus = (int)OrderStatus.Completed;
+            order = Order.UpdateOrderStatus(order, new OrderUpdateStatusDto
+            {
+                OrderId = order.Id,
+                Status = (int)OrderStatus.Paid,
+            });
             await _orderDal.UpdateAsync(order);
-
+            scope.Complete();
             return new SuccessResult("Payment processed successfully.");
         }
     }

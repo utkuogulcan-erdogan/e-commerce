@@ -21,18 +21,9 @@ namespace Bussiness.Concrete
 
         public async Task<IResult> Add(ProductAddDto productDto)
         {
-            var product = new Product
-            {
-                Id = Guid.NewGuid(),
-                Name = productDto.Name,
-                Description = productDto.Description,
-                Price = productDto.Price,
-                Stock = productDto.Stock,
-                CategoryId = productDto.CategoryId,
-                Slug = GenerateSlug(productDto.Name),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null
-            };
+            var product = Product.CreateProduct(
+                productDto
+            );
 
             await _productDal.AddAsync(product);
             return new SuccessResult("Product added successfully.");
@@ -70,50 +61,9 @@ namespace Bussiness.Concrete
                 return new ErrorResult("Product not found.");
             }
 
-            if (!string.IsNullOrWhiteSpace(productUpdateDto.Name))
-            {
-                existingProduct.Name = productUpdateDto.Name;
-            }
-
-            if (!string.IsNullOrWhiteSpace(productUpdateDto.Description))
-            {
-                existingProduct.Description = productUpdateDto.Description;
-            }
-
-            if (productUpdateDto.Price.HasValue)
-            {
-                existingProduct.Price = productUpdateDto.Price.Value;
-            }
-
-            if (productUpdateDto.Stock.HasValue)
-            {
-                existingProduct.Stock = productUpdateDto.Stock.Value;
-            }
-
-            if (productUpdateDto.CategoryId.HasValue && productUpdateDto.CategoryId.Value != Guid.Empty)
-            {
-                existingProduct.CategoryId = productUpdateDto.CategoryId;
-            }
-
-            existingProduct.UpdatedAt = DateTime.UtcNow;
-
+            var updatedProduct = Product.UpdateProduct(existingProduct, productUpdateDto);
             await _productDal.UpdateAsync(existingProduct);
             return new SuccessResult("Product updated successfully.");
-        }
-        private string GenerateSlug(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-                return string.Empty;
-
-            return name.ToLowerInvariant()
-                .Replace(" ", "-")
-                .Replace("ı", "i")
-                .Replace("ğ", "g")
-                .Replace("ü", "u")
-                .Replace("ş", "s")
-                .Replace("ö", "o")
-                .Replace("ç", "c")
-                .Trim();
         }
     }
 }

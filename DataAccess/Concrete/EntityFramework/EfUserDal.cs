@@ -45,21 +45,5 @@ namespace DataAccess.Concrete.EntityFramework
             ).AsNoTracking().FirstOrDefaultAsync();
             return result;
         }
-
-        public async Task AddUserAsync(UserAddDto user, byte[] passwordHash, byte[] passwordSalt)
-        {
-            var newUser = new User
-            {
-                Id = Guid.NewGuid(),
-                FullName = user.FullName,
-                UserName = user.UserName,
-                Email = user.Email,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt,
-                CreatedAt = DateTime.UtcNow
-            };
-            await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
-        }
     }
 }

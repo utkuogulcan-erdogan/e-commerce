@@ -1,4 +1,5 @@
 ﻿using Core.Entites;
+using Entities.DTO_s;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,5 +18,19 @@ namespace Entities.Concrete
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public Order Order { get; set; }
+        public static OrderPayment CreateOrderPayment(Guid orderId, OrderPaymentDto dto)
+        {
+            return new OrderPayment
+            {
+                Id = Guid.NewGuid(),
+                OrderId = orderId,
+                Amount = dto.Amount,
+                Provider = dto.Provider,
+                TransactionId = dto.TransactionId,
+                Status = dto.Status,
+                CreatedAt = DateTime.UtcNow
+            };
+
+        }
     }
 }
