@@ -17,7 +17,7 @@ namespace WepAPI.Controllers
             _orderAddressService = orderAddressService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             var results = await _orderService.GetAllAsync();
             if (results.Success)
@@ -27,7 +27,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var results = await _orderService.GetOrderByIdAsync(id);
             if (results.Success)
@@ -38,7 +38,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpPost("users/{userId}/orders")]
-        public async Task<IActionResult> CreateOrder(Guid userId, OrderCreateDto dto)
+        public async Task<IActionResult> CreateOrderAsync(Guid userId, OrderCreateDto dto)
         {
             var order = await _orderService.CreateOrderAsync(userId, dto);
             if (order.Success)
@@ -49,7 +49,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpPost("orders/{userId}/orders/payments")]
-        public async Task<IActionResult> CreatePayment(Guid userId, OrderPaymentDto dto)
+        public async Task<IActionResult> CreatePaymentAsync(Guid userId, OrderPaymentDto dto)
         {
             var payment = await _orderService.CreatePaymentAsync(userId, dto);
             if (payment.Success)
@@ -60,7 +60,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpPut("orders/{userId}/orders/status")]
-        public async Task<IActionResult> UpdateOrderStatus(Guid userId, OrderUpdateStatusDto dto)
+        public async Task<IActionResult> UpdateOrderStatusAsync(Guid userId, OrderUpdateStatusDto dto)
         {
             var result = await _orderService.UpdateOrderStatusAsync(userId,dto);
             if (result.Success)

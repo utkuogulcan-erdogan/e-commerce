@@ -3,6 +3,7 @@ using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTO_s;
+using Entities.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +19,10 @@ namespace Bussiness.Concrete
         {
             _orderAddressDal = orderAddressDal;
         }
-        public async Task<DataResult<List<OrderAddressDisplayDto>>> GetOrderAddressesByOrderIdAsync(Guid userId)
+        public async Task<DataResult<List<OrderAddressDisplayDto>>> GetOrderAddressesByUserIdAsync(Guid userId)
         {
-            return new SuccessDataResult<List<OrderAddressDisplayDto>>(await _orderAddressDal.GetOrderAddressesByOrderIdAsync(userId), "Order addresses retrieved successfully.");
+            var specification = new OrderAddressSpecification(userId: userId);
+            return new SuccessDataResult<List<OrderAddressDisplayDto>>(await _orderAddressDal.GetOrderAddressesAsync(specification), "Order addresses retrieved successfully.");
         }
 
     }

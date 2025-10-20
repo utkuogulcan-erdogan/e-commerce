@@ -18,7 +18,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBasketsDetailed()
+        public async Task<IActionResult> GetAllBasketsDetailedAsync()
         {
             var results = await _basketService.GetAllBasketsDetailedAsync();
             if (results.Success)
@@ -28,7 +28,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id)
         {
             var results = await _basketService.GetDetailedBasketByIdAsync(id);
             if (results.Success)
@@ -38,7 +38,7 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUserId(Guid userId)
+        public async Task<IActionResult> GetByUserIdAsync(Guid userId)
         {
             var results = await _basketService.GetDetailedBasketByUserIdAsync(userId);
             if (results.Success)

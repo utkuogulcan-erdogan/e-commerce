@@ -1,4 +1,5 @@
 ﻿using Core.DataAccess;
+using Core.Specifications;
 using Entities.Concrete;
 using Entities.DTO_s;
 using System;
@@ -12,7 +13,7 @@ namespace DataAccess.Abstract
     public interface IOrderDal : IEntityRepository<Order>
     {
         public Task<List<OrderDisplayDto>> GetAllOrdersAsync();
-        public Task<OrderDisplayDto> GetOrderByIdAsync(Guid id);
-        public Task<List<OrderDisplayDto>> GetOrdersByUserIdAsync(Guid userId);
+        public Task<OrderDisplayDto> GetOrderAsync(ISpecification<Order> specification);
+        public Task<List<OrderDisplayDto>> GetOrdersAsync(ISpecification<Order> specification);
     }
 }

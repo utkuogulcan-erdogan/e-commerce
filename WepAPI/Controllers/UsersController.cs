@@ -15,9 +15,9 @@ namespace WepAPI.Controllers
             _userService = userService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var results = await _userService.GetAll();
+            var results = await _userService.GetAllAsync();
             if (results.Success)
             {
                 return Ok(results.Data);
@@ -25,9 +25,9 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("by-email/{email}")]
-        public async Task<IActionResult> GetByMail(string email)
+        public async Task<IActionResult> GetByMailAsync(string email)
         {
-            var results = await _userService.GetByMail(email);
+            var results = await _userService.GetByMailAsync(email);
             if (results.Success)
             {
                 return Ok(results.Data);
@@ -35,9 +35,9 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpPost]
-        public async Task<IActionResult> Add(UserAddDto user)
+        public async Task<IActionResult> AddAsync(UserAddDto user)
         {
-            var results = await _userService.Add(user);
+            var results = await _userService.AddAsync(user);
             if (results.Success)
             {
                 return Ok(results);
@@ -45,9 +45,9 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UserUpdateDto user)
+        public async Task<IActionResult> UpdateAsync(Guid id, UserUpdateDto user)
         {
-            var results = await _userService.Update(id, user);
+            var results = await _userService.UpdateAsync(id, user);
             if (results.Success)
             {
                 return Ok(results);
@@ -55,9 +55,9 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var results = await _userService.Delete(id);
+            var results = await _userService.DeleteAsync(id);
             if (results.Success)
             {
                 return Ok(results);

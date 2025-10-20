@@ -1,9 +1,11 @@
 ﻿using Bussiness.Abstract;
+using Core.Specifications;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.DTO_s;
+using Entities.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +21,7 @@ namespace Bussiness.Concrete
         {
             _basketDal = basketDal;
         }
-        public async Task<IResult> Add(Guid userId)
+        public async Task<IResult> AddAsync(Guid userId)
         {
             var newBasket = Basket.CreateBasket(userId);
             await _basketDal.AddAsync(newBasket);
@@ -33,12 +35,14 @@ namespace Bussiness.Concrete
 
         public async Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByIdAsync(Guid id)
         {
-            return new SuccessDataResult<BasketDisplayDto>(await _basketDal.GetDetailedBasketByIdAsync(id), "Basket retrieved successfully.");
+            var specification = new BasketSpecification(basketId: id);
+            return new SuccessDataResult<BasketDisplayDto>(await _basketDal.GetDetailedBasketAsync(specification), "Basket retrieved successfully.");
         }
 
         public async Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByUserIdAsync(Guid id)
         {
-            return new SuccessDataResult<BasketDisplayDto>(await _basketDal.GetDetailedBasketByUserIdAsync(id), "Detailed basket retrieved successfully.");
+            var specification = new BasketSpecification(userId: id);
+            return new SuccessDataResult<BasketDisplayDto>(await _basketDal.GetDetailedBasketAsync(specification), "Detailed basket retrieved successfully.");
         }
 
     }

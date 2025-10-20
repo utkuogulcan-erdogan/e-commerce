@@ -14,6 +14,6 @@ namespace Bussiness.Abstract
         Task<IDataResult<List<BasketDisplayDto>>> GetAllBasketsDetailedAsync();
         Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByUserIdAsync(Guid id);
         Task<IDataResult<BasketDisplayDto>> GetDetailedBasketByIdAsync(Guid id);
-        Task<IResult> Add(Guid userId);
+        Task<IResult> AddAsync(Guid userId);
     }
 }

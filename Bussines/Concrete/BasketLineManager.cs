@@ -24,7 +24,7 @@ namespace Bussiness.Concrete
         public async Task<IResult> AddProductToBasketAsync(Guid userId, Guid productId, int quantity)
         {
             var basket = await _basketDal.GetAsync(basket => basket.UserId == userId);
-            var product = await _productDal.FindByIdAsync(productId);
+            var product = await _productDal.GetAsync(product => product.Id == productId);
             if (product == null)
             {
                 throw new Exception("Product not found");
@@ -52,7 +52,7 @@ namespace Bussiness.Concrete
         public async Task<IResult> RemoveProductFromBasketAsync(Guid userId, Guid productId)
         {
             var basket = await _basketDal.GetAsync(basketDal => basketDal.UserId == userId);
-            var product = _productDal.FindByIdAsync(productId).Result;
+            var product = await _productDal.GetAsync(product => product.Id == productId);
             if (product == null)
             {
                 throw new Exception("Product not found");
@@ -72,8 +72,8 @@ namespace Bussiness.Concrete
         }
         public async Task<IResult> UpdateProductQuantityAsync(Guid userId, Guid productId, int quantity)
         {
-            var basket = await _basketDal.GetDetailedBasketByUserIdAsync(userId);
-            var product = await _productDal.FindByIdAsync(productId);
+            var basket = await _basketDal.GetAsync(basketDal => basketDal.UserId == userId);
+            var product = await _productDal.GetAsync(product => product.Id == productId);
             if (product == null)
             {
                 throw new Exception("Product not found");

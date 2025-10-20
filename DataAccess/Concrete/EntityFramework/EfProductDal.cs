@@ -1,4 +1,5 @@
 ﻿using Core.DataAccess.EntityFramework;
+using Core.Specifications;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTO_s;
@@ -15,7 +16,6 @@ namespace DataAccess.Concrete.EntityFramework
         public async Task<List<ProductDisplayDto>> GetAllProductsAsync()
         {
             return await _context.Products
-                .Include(p => p.Images)
                 .Select(p => new ProductDisplayDto
                 {
                     Id = p.Id,
@@ -36,12 +36,13 @@ namespace DataAccess.Concrete.EntityFramework
                 .ToListAsync();
         }
 
-        public async Task<Product> FindByIdAsync(Guid id)
+        public async Task<Product> GetProductAsync(ISpecification<Product> specification)
         {
             return await _context.Products
                 .AsNoTracking()
+                .Where(specification.Criteria)
                 .Include(p => p.Images)
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync();
         }
     }
 }

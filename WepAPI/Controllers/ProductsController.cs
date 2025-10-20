@@ -19,7 +19,7 @@ namespace WepAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             var result = await _productService.GetAllProductsAsync();
             if (result.Success)
@@ -30,9 +30,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var result = await _productService.GetById(id);
+            var result = await _productService.GetProductByIdAsync(id);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -41,9 +41,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(ProductAddDto productAddDto)
+        public async Task<IActionResult> AddAsync(ProductAddDto productAddDto)
         {
-            var result = await _productService.Add(productAddDto);
+            var result = await _productService.AddAsync(productAddDto);
             if (result.Success)
             {
                 return Ok(result);
@@ -52,10 +52,10 @@ namespace WepAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id,ProductUpdateDto product)
+        public async Task<IActionResult> UpdateAsync(Guid id,ProductUpdateDto product)
         {
             
-            var result = await _productService.Update(id,product);
+            var result = await _productService.UpdateAsync(id,product);
             if (result.Success)
             {
                 return Ok(result);
@@ -64,9 +64,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var result = await _productService.Delete(id);
+            var result = await _productService.DeleteAsync(id);
             if (result.Success)
             {
                 return Ok(result);

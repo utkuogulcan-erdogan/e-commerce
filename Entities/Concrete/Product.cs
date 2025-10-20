@@ -44,11 +44,6 @@ namespace Entities.Concrete
         {
             ArgumentNullException.ThrowIfNull(product);
 
-            if (product == null)
-            {
-                return new ErrorResult("Product not found.");
-            }
-
             if (!string.IsNullOrWhiteSpace(dto.Name))
             {
                 product.Name = dto.Name;

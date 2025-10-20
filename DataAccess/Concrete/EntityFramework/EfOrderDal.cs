@@ -1,4 +1,5 @@
 using Core.DataAccess.EntityFramework;
+using Core.Specifications;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTO_s;
@@ -75,10 +76,10 @@ namespace DataAccess.Concrete.EntityFramework
                 .AsNoTracking()
                 .ToListAsync();
         }
-        public async Task<OrderDisplayDto> GetOrderByIdAsync(Guid id)
+        public async Task<OrderDisplayDto> GetOrderAsync(ISpecification<Order> specification)
         {
             return await _context.Orders
-                .Where(o => o.Id == id)
+                .Where(specification.Criteria)
                 .Select(order => new OrderDisplayDto
                 {
                     Id = order.Id,
@@ -128,10 +129,10 @@ namespace DataAccess.Concrete.EntityFramework
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<OrderDisplayDto>> GetOrdersByUserIdAsync(Guid userId)
+        public async Task<List<OrderDisplayDto>> GetOrdersAsync(ISpecification<Order> specification)
         {
             return await _context.Orders
-                .Where(o => o.UserId == userId)
+                .Where(specification.Criteria)
                 .Select(order => new OrderDisplayDto
                 {
                     Id = order.Id,

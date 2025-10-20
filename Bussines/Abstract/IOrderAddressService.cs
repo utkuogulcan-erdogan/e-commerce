@@ -10,6 +10,6 @@ namespace Bussiness.Abstract
 {
     public interface IOrderAddressService
     {
-        Task<DataResult<List<OrderAddressDisplayDto>>> GetOrderAddressesByOrderIdAsync(Guid orderId);
+        Task<DataResult<List<OrderAddressDisplayDto>>> GetOrderAddressesByUserIdAsync(Guid orderId);
     }
 }

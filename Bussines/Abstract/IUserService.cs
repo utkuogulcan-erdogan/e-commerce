@@ -12,10 +12,10 @@ namespace Bussiness.Abstract
     public interface IUserService
     {
         //IDataResult<List<OperationClaim>> GetClaims(User user);
-        Task<IDataResult<UserDisplayDto>> GetByMail(string email);
-        Task<IResult> Add(UserAddDto user);
-        Task<IResult> Update(Guid id, UserUpdateDto user);
-        Task<IResult> Delete(Guid id);
-        Task<IDataResult<List<UserDisplayDto>>> GetAll();
+        Task<IDataResult<UserDisplayDto>> GetByMailAsync(string email);
+        Task<IResult> AddAsync(UserAddDto user);
+        Task<IResult> UpdateAsync(Guid id, UserUpdateDto user);
+        Task<IResult> DeleteAsync(Guid id);
+        Task<IDataResult<List<UserDisplayDto>>> GetAllAsync();
     }
 }

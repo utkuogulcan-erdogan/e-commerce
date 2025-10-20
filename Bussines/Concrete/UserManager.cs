@@ -5,6 +5,7 @@ using DataAccess.Abstract;
 using DataAccess.Concrete.EntityFramework;
 using Entities.Concrete;
 using Entities.DTO_s;
+using Entities.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Bussiness.Concrete
             _hashingHelper = hashingHelper;
         }
 
-        public async Task<IResult> Add(UserAddDto user)
+        public async Task<IResult> AddAsync(UserAddDto user)
         {
             _hashingHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
             var newUser = User.CreateUser(
@@ -35,24 +36,25 @@ namespace Bussiness.Concrete
             return new SuccessResult("User added successfully.");
         }
 
-        public async Task<IResult> Delete(Guid id)
+        public async Task<IResult> DeleteAsync(Guid id)
         {
             await _userDal.DeleteAsync(id);
             return new SuccessResult("User deleted successfully.");
         }
 
-        public async Task<IDataResult<List<UserDisplayDto>>> GetAll()
+        public async Task<IDataResult<List<UserDisplayDto>>> GetAllAsync()
         {
             var response = await _userDal.GetAllUserAsync();
             return new SuccessDataResult<List<UserDisplayDto>>(response, "Users listed successfully.");
         }
 
-        public async Task<IDataResult<UserDisplayDto>> GetByMail(string email)
+        public async Task<IDataResult<UserDisplayDto>> GetByMailAsync(string email)
         {
-            return new SuccessDataResult<UserDisplayDto>(await _userDal.GetUserAsync(email), "User retrieved successfully.");
+            var specification = new UserSpecification(email: email);
+            return new SuccessDataResult<UserDisplayDto>(await _userDal.GetUserAsync(specification), "User retrieved successfully.");
         }
 
-        public async Task<IResult> Update(Guid id, UserUpdateDto user)
+        public async Task<IResult> UpdateAsync(Guid id, UserUpdateDto user)
         {
             var existingUser = await _userDal.GetAsync(u => u.Id == id);
             if (user == null)

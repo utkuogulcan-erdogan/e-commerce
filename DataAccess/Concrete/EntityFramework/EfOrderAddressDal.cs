@@ -1,8 +1,10 @@
 using Core.DataAccess.EntityFramework;
+using Core.Specifications;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTO_s;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace DataAccess.Concrete.EntityFramework
 {
@@ -12,21 +14,22 @@ namespace DataAccess.Concrete.EntityFramework
         {
         }
 
-        public async Task<List<OrderAddressDisplayDto>> GetOrderAddressesByOrderIdAsync(Guid orderId)
+        public async Task<List<OrderAddressDisplayDto>> GetOrderAddressesAsync(ISpecification<OrderAddress> specification)
         {
-            var result = await (from address in _context.OrderAddresses
-                                where address.OrderId == orderId
-                                select new OrderAddressDisplayDto
-                                {
-                                    Id = address.Id,
-                                    OrderId = address.OrderId,
-                                    AddressType = address.AddressType,
-                                    Street = address.Street,
-                                    City = address.City,
-                                    PostalCode = address.PostalCode,
-                                    Country = address.Country
-                                }).AsNoTracking().ToListAsync();
-            return result;
+            return await _context.Set<OrderAddress>()
+                .AsNoTracking()
+                .Where(specification.Criteria)
+                .Select(orderAddress => new OrderAddressDisplayDto
+                {
+                    Id = orderAddress.Id,
+                    OrderId = orderAddress.OrderId,
+                    AddressType = orderAddress.AddressType,
+                    Street = orderAddress.Street,
+                    City = orderAddress.City,
+                    PostalCode = orderAddress.PostalCode,
+                    Country = orderAddress.Country
+                })
+                .ToListAsync();
         }
     }
 }

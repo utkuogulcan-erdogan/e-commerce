@@ -4,6 +4,7 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTO_s;
 using Entities.Enums;
+using Entities.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,12 +37,14 @@ namespace Bussiness.Concrete
 
         public async Task<IDataResult<OrderDisplayDto>> GetOrderByIdAsync(Guid id)
         {
-            return new SuccessDataResult<OrderDisplayDto>(await _orderDal.GetOrderByIdAsync(id), "Order retrieved successfully.");
+            var specification = new OrderSpecification(orderId: id);
+            return new SuccessDataResult<OrderDisplayDto>(await _orderDal.GetOrderAsync(specification), "Order retrieved successfully.");
         }
 
         public async Task<IDataResult<List<OrderDisplayDto>>> GetOrdersByUserIdAsync(Guid userId)
         {
-            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetOrdersByUserIdAsync(userId), "User orders listed successfully.");
+            var specification = new OrderSpecification(userId: userId);
+            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetOrdersAsync(specification), "User orders listed successfully.");
         }
 
         public async Task<IResult> CreateOrderAsync(Guid userId, OrderCreateDto dto)
