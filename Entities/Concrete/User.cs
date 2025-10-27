@@ -21,7 +21,7 @@ namespace Entities.Concrete
         public Basket Basket { get; set; }
         public ICollection<Order> Orders { get; set; }
 
-        public static User CreateUser(
+        public static User Create(
             UserAddDto userDto,
             byte[] passwordHash,
             byte[] passwordSalt)
@@ -38,7 +38,7 @@ namespace Entities.Concrete
             };
         }
 
-        public static User UpdateUser(
+        public static User Update(
             User user,
             byte[] passwordHash,
             byte[] passwordSalt,

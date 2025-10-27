@@ -17,7 +17,7 @@ namespace Entities.Concrete
         public User User { get; set; }
         public ICollection<BasketLine> BasketLines { get; set; }
 
-        public static Basket CreateBasket(Guid userId)
+        public static Basket Create(Guid userId)
         {
             return new Basket
             {

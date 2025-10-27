@@ -23,7 +23,7 @@ namespace Bussiness.Concrete
         }
         public async Task<IResult> AddAsync(Guid userId)
         {
-            var newBasket = Basket.CreateBasket(userId);
+            var newBasket = Basket.Create(userId);
             await _basketDal.AddAsync(newBasket);
             return new SuccessResult("Basket created successfully.");
         }

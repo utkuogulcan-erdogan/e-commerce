@@ -18,7 +18,7 @@ namespace Entities.Concrete
         public string Street { get; set; }
         public string PostalCode { get; set; }
         public Order Order { get; set; }
-        public static OrderAddress CreateOrderAddress(Guid orderId, OrderAddressCreateDto orderAdressDto)
+        public static OrderAddress Create(Guid orderId, OrderAddressCreateDto orderAdressDto)
         {
             return new OrderAddress
             {

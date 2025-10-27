@@ -27,7 +27,7 @@ namespace Bussiness.Concrete
         public async Task<IResult> AddAsync(UserAddDto user)
         {
             _hashingHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
-            var newUser = User.CreateUser(
+            var newUser = User.Create(
                 user,
                 passwordHash,
                 passwordSalt
@@ -69,7 +69,7 @@ namespace Bussiness.Concrete
                 userPasswordHash = passwordHash;
                 userPasswordSalt = passwordSalt;
             }
-            var updatedUser = User.UpdateUser(existingUser, userPasswordHash, userPasswordSalt, user);
+            var updatedUser = User.Update(existingUser, userPasswordHash, userPasswordSalt, user);
             await _userDal.UpdateAsync(updatedUser);
             return new SuccessResult("User updated successfully.");
         }

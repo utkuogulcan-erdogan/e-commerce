@@ -24,7 +24,7 @@ namespace Entities.Concrete
         public ICollection<BasketLine> BasketLines { get; set; }
         public ICollection<OrderLine> OrderLines { get; set; }
 
-        public static Product CreateProduct(ProductAddDto dto)
+        public static Product Create(ProductAddDto dto)
         {
             return new Product
             {
@@ -40,7 +40,7 @@ namespace Entities.Concrete
             };
         }
 
-        public static Product UpdateProduct(Product product, ProductUpdateDto dto)
+        public static Product Update(Product product, ProductUpdateDto dto)
         {
             ArgumentNullException.ThrowIfNull(product);
 

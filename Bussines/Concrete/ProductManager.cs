@@ -22,7 +22,7 @@ namespace Bussiness.Concrete
 
         public async Task<IResult> AddAsync(ProductAddDto productDto)
         {
-            var product = Product.CreateProduct(
+            var product = Product.Create(
                 productDto
             );
 
@@ -63,7 +63,7 @@ namespace Bussiness.Concrete
                 return new ErrorResult("Product not found.");
             }
 
-            var updatedProduct = Product.UpdateProduct(existingProduct, productUpdateDto);
+            var updatedProduct = Product.Update(existingProduct, productUpdateDto);
             await _productDal.UpdateAsync(existingProduct);
             return new SuccessResult("Product updated successfully.");
         }

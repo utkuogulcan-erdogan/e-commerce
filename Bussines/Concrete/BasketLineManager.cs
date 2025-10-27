@@ -31,7 +31,7 @@ namespace Bussiness.Concrete
             }
             if (basket == null)
             {
-                var newBasket = Basket.CreateBasket(userId);
+                var newBasket = Basket.Create(userId);
                 await _basketDal.AddAsync(newBasket);
                 basket = await _basketDal.GetAsync(basket => basket.UserId == userId);
             }
@@ -43,7 +43,7 @@ namespace Bussiness.Concrete
             }
             else
             {
-                var newBasketLine = BasketLine.CreateBasketLine(basket.Id, productId, quantity);
+                var newBasketLine = BasketLine.Create(basket.Id, productId, quantity);
                 await _basketLineDal.AddAsync(newBasketLine);
             }
             return new SuccessResult("Product added to basket.");

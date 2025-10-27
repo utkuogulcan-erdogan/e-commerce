@@ -22,7 +22,7 @@ namespace Entities.Concrete
         public ICollection<OrderLine> OrderLines { get; set; }
         public ICollection<OrderAddress> OrderAddresses { get; set; }
         public OrderPayment OrderPayment { get; set; }
-        public static Order CreateOrder(Guid userId, Basket basket)
+        public static Order Create(Guid userId, Basket basket)
         {
             ArgumentNullException.ThrowIfNull(basket);
 
@@ -46,13 +46,13 @@ namespace Entities.Concrete
             };
         }
 
-        public void AddOrderAddress(OrderAddress address)
+        public void AddAddress(OrderAddress address)
         {
             address.OrderId = Id;
             OrderAddresses.Add(address);
         }
 
-        public static Order UpdateOrderStatus(Order order, OrderUpdateStatusDto dto)
+        public static Order UpdateStatus(Order order, OrderUpdateStatusDto dto)
         {
             ArgumentNullException.ThrowIfNull(order);
             ArgumentNullException.ThrowIfNull(dto);

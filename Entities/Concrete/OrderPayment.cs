@@ -18,7 +18,7 @@ namespace Entities.Concrete
         public int Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public Order Order { get; set; }
-        public static OrderPayment CreateOrderPayment(Guid orderId, OrderPaymentDto dto)
+        public static OrderPayment Create(Guid orderId, OrderPaymentDto dto)
         {
             return new OrderPayment
             {

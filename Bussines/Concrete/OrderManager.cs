@@ -53,23 +53,23 @@ namespace Bussiness.Concrete
             if (basket == null || basket.BasketLines.Count() != 0)
                 return new ErrorDataResult<OrderDisplayDto>("Basket is empty.");
 
-            var order = Order.CreateOrder(userId, basket);
+            var order = Order.Create(userId, basket);
 
             if(dto.ShippingAddress == null)
             {
                 return new ErrorResult("Shipping address is required.");
             }
 
-            var shippingAddress = OrderAddress.CreateOrderAddress(order.Id, dto.ShippingAddress);
-            order.AddOrderAddress(shippingAddress);
+            var shippingAddress = OrderAddress.Create(order.Id, dto.ShippingAddress);
+            order.AddAddress(shippingAddress);
 
             if (dto.BillingAddress == null)
             {
                 return new ErrorResult("Billing address is required.");
             }
 
-            var billingAddress = OrderAddress.CreateOrderAddress(order.Id, dto.BillingAddress);
-            order.AddOrderAddress(billingAddress);
+            var billingAddress = OrderAddress.Create(order.Id, dto.BillingAddress);
+            order.AddAddress(billingAddress);
 
             using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await _orderDal.AddAsync(order);
@@ -86,7 +86,7 @@ namespace Bussiness.Concrete
             if (order.UserId != userId)
                 return new ErrorResult("Unauthorized access.");
 
-            order = Order.UpdateOrderStatus(order, dto);
+            order = Order.UpdateStatus(order, dto);
             await _orderDal.UpdateAsync(order);
             return new SuccessResult("Order status updated successfully.");
         }
@@ -102,7 +102,7 @@ namespace Bussiness.Concrete
 
             if ((PaymentStatus)dto.Status != PaymentStatus.Completed)
             {
-                order = Order.UpdateOrderStatus(order, new OrderUpdateStatusDto
+                order = Order.UpdateStatus(order, new OrderUpdateStatusDto
                 {
                     OrderId = order.Id,
                     Status = (int)OrderStatus.Failed,
@@ -111,11 +111,11 @@ namespace Bussiness.Concrete
                 return new ErrorResult("Payment failed.");
             }
 
-            var payment = OrderPayment.CreateOrderPayment(order.Id, dto);
+            var payment = OrderPayment.Create(order.Id, dto);
 
             using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
             await _orderPaymentDal.AddAsync(payment);
-            order = Order.UpdateOrderStatus(order, new OrderUpdateStatusDto
+            order = Order.UpdateStatus(order, new OrderUpdateStatusDto
             {
                 OrderId = order.Id,
                 Status = (int)OrderStatus.Paid,

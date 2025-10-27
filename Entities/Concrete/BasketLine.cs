@@ -15,7 +15,7 @@ namespace Entities.Concrete
         public int Quantity { get; set; }
         public Basket Basket { get; set; }
         public Product Product { get; set; }
-        public static BasketLine CreateBasketLine(Guid basketId, Guid productId, int quantity)
+        public static BasketLine Create(Guid basketId, Guid productId, int quantity)
         {
             return new BasketLine
             {
