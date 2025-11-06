@@ -6,14 +6,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DataAccess.Abstract
 {
     public interface IOrderDal : IEntityRepository<Order>
     {
-        public Task<List<OrderDisplayDto>> GetAllOrdersAsync();
-        public Task<OrderDisplayDto> GetOrderAsync(ISpecification<Order> specification);
-        public Task<List<OrderDisplayDto>> GetOrdersAsync(ISpecification<Order> specification);
+        public Task<List<OrderDisplayDto>> GetAllOrdersAsync(CancellationToken cancellationToken = default);
+        public Task<OrderDisplayDto> GetOrderByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        public Task<List<OrderDisplayDto>> GetOrdersByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
     }
 }

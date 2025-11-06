@@ -19,9 +19,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
         {
-            var result = await _productService.GetAllProductsAsync();
+            var result = await _productService.GetAllProductsAsync(cancellationToken);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -30,9 +30,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _productService.GetProductByIdAsync(id);
+            var result = await _productService.GetProductByIdAsync(id, cancellationToken);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -41,9 +41,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddAsync(ProductAddDto productAddDto)
+        public async Task<IActionResult> AddAsync(ProductAddDto productAddDto, CancellationToken cancellationToken)
         {
-            var result = await _productService.AddAsync(productAddDto);
+            var result = await _productService.AddAsync(productAddDto, cancellationToken);
             if (result.Success)
             {
                 return Ok(result);
@@ -52,10 +52,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id,ProductUpdateDto product)
+        public async Task<IActionResult> UpdateAsync(Guid id, ProductUpdateDto product, CancellationToken cancellationToken)
         {
-            
-            var result = await _productService.UpdateAsync(id,product);
+            var result = await _productService.UpdateAsync(id, product, cancellationToken);
             if (result.Success)
             {
                 return Ok(result);
@@ -64,9 +63,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(Guid id)
+        public async Task<IActionResult> DeleteAsync(Guid id, CancellationToken cancellationToken)
         {
-            var result = await _productService.DeleteAsync(id);
+            var result = await _productService.DeleteAsync(id, cancellationToken);
             if (result.Success)
             {
                 return Ok(result);

@@ -14,7 +14,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
         }
 
-        public async Task<List<OrderAddressDisplayDto>> GetOrderAddressesAsync(ISpecification<OrderAddress> specification)
+        public async Task<List<OrderAddressDisplayDto>> GetOrderAddressesAsync(ISpecification<OrderAddress> specification, CancellationToken cancellationToken = default)
         {
             return await _context.Set<OrderAddress>()
                 .AsNoTracking()
@@ -29,7 +29,7 @@ namespace DataAccess.Concrete.EntityFramework
                     PostalCode = orderAddress.PostalCode,
                     Country = orderAddress.Country
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
     }
 }

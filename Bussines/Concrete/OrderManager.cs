@@ -4,14 +4,12 @@ using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTO_s;
 using Entities.Enums;
-using Entities.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Bussiness.Concrete
 {
@@ -21,79 +19,115 @@ namespace Bussiness.Concrete
         IBasketDal _basketDal;
         IOrderAddressService _orderAddressService;
         IOrderPaymentDal _orderPaymentDal;
-        IBasketLineDal _basketLineDal;
-        public OrderManager(IOrderDal orderDal, IBasketDal basketDal, IOrderAddressService orderAddressService,IOrderPaymentDal orderPaymentDal, IBasketLineDal basketLineDal)
+        public OrderManager(IOrderDal orderDal, IBasketDal basketDal, IOrderAddressService orderAddressService, IOrderPaymentDal orderPaymentDal)
         {
             _orderDal = orderDal;
             _basketDal = basketDal;
             _orderAddressService = orderAddressService;
             _orderPaymentDal = orderPaymentDal;
-            _basketLineDal = basketLineDal;
         }
-        public async Task<IDataResult<List<OrderDisplayDto>>> GetAllAsync()
+        public async Task<IDataResult<List<OrderDisplayDto>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetAllOrdersAsync(), "Orders listed successfully.");
-        }
-
-        public async Task<IDataResult<OrderDisplayDto>> GetOrderByIdAsync(Guid id)
-        {
-            var specification = new OrderSpecification(orderId: id);
-            return new SuccessDataResult<OrderDisplayDto>(await _orderDal.GetOrderAsync(specification), "Order retrieved successfully.");
+            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetAllOrdersAsync(cancellationToken), "Orders listed successfully.");
         }
 
-        public async Task<IDataResult<List<OrderDisplayDto>>> GetOrdersByUserIdAsync(Guid userId)
+        public async Task<IDataResult<OrderDisplayDto>> GetOrderByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var specification = new OrderSpecification(userId: userId);
-            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetOrdersAsync(specification), "User orders listed successfully.");
+            return new SuccessDataResult<OrderDisplayDto>(await _orderDal.GetOrderByIdAsync(id, cancellationToken), "Order retrieved successfully.");
         }
 
-        public async Task<IResult> CreateOrderAsync(Guid userId, OrderCreateDto dto)
+        public async Task<IDataResult<List<OrderDisplayDto>>> GetOrdersByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            var basket = await _basketDal.GetAsync(basket => basket.UserId == userId);
-            if (basket == null || basket.BasketLines.Count() != 0)
+            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetOrdersByUserIdAsync(userId, cancellationToken), "User orders listed successfully.");
+        }
+
+        public async Task<IResult> CreateOrderAsync(Guid userId, OrderCreateDto dto, CancellationToken cancellationToken = default)
+        {
+            var basket = await _basketDal.GetDetailedBasketByUserIdAsync(userId, cancellationToken);
+            if (basket == null || !basket.BasketLines.Any())
                 return new ErrorDataResult<OrderDisplayDto>("Basket is empty.");
 
-            var order = Order.Create(userId, basket);
+            var order = new Order
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                OrderDate = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
+                OrderStatus = (int)OrderStatus.ReadyForPayment,
+                TotalAmount = basket.BasketLines.Sum(bl => bl.Quantity * bl.Product.Price),
+                OrderLines = basket.BasketLines.Select(bl => new OrderLine
+                {
+                    Id = Guid.NewGuid(),
+                    ProductId = bl.ProductId,
+                    ProductName = bl.Product.Name,
+                    Quantity = bl.Quantity,
+                    UnitPrice = bl.Product.Price,
+                }).ToList()
+            };
 
-            if(dto.ShippingAddress == null)
+            if (dto.ShippingAddress != null)
+            {
+                order.OrderAddresses = new List<OrderAddress>
+                    {
+                        new OrderAddress
+                        {
+                            Id = Guid.NewGuid(),
+                            OrderId = order.Id,
+                            AddressType = AddressType.Shipping.ToString(),
+                            Street = dto.ShippingAddress.Street,
+                            City = dto.ShippingAddress.City,
+                            Country = dto.ShippingAddress.Country,
+                            PostalCode = dto.ShippingAddress.PostalCode,
+                        }
+                    };
+            }
+            else
             {
                 return new ErrorResult("Shipping address is required.");
             }
-
-            var shippingAddress = OrderAddress.Create(order.Id, dto.ShippingAddress);
-            order.AddAddress(shippingAddress);
-
-            if (dto.BillingAddress == null)
+            if (dto.BillingAddress != null)
+            {
+                if (order.OrderAddresses == null)
+                    order.OrderAddresses = new List<OrderAddress>();
+                order.OrderAddresses.Add(new OrderAddress
+                {
+                    Id = Guid.NewGuid(),
+                    OrderId = order.Id,
+                    AddressType = AddressType.Billing.ToString(),
+                    Street = dto.BillingAddress.Street,
+                    City = dto.BillingAddress.City,
+                    Country = dto.BillingAddress.Country,
+                    PostalCode = dto.BillingAddress.PostalCode,
+                });
+            }
+            else
             {
                 return new ErrorResult("Billing address is required.");
             }
-
-            var billingAddress = OrderAddress.Create(order.Id, dto.BillingAddress);
-            order.AddAddress(billingAddress);
-
-            using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await _orderDal.AddAsync(order);
-            await _basketLineDal.ClearBasketLinesAsync(basket.Id);
-            scope.Complete();
+            await _orderDal.AddAsync(order, cancellationToken);
+            await _basketDal.DeleteAsync(basket.Id, cancellationToken);
             return new SuccessResult("Order created successfully.");
         }
 
-        public async Task<IResult> UpdateOrderStatusAsync(Guid userId, OrderUpdateStatusDto dto)
+        public async Task<IResult> UpdateOrderStatusAsync(Guid userId, OrderUpdateStatusDto dto, CancellationToken cancellationToken = default)
         {
-            var order = await _orderDal.GetAsync(o => o.Id == dto.OrderId);
+            var order = await _orderDal.GetOrderByIdAsync(dto.OrderId, cancellationToken);
             if (order == null)
                 return new ErrorResult("Order not found.");
-            if (order.UserId != userId)
-                return new ErrorResult("Unauthorized access.");
-
-            order = Order.UpdateStatus(order, dto);
-            await _orderDal.UpdateAsync(order);
+            
+            // Since GetOrderByIdAsync returns OrderDisplayDto, we need to get the actual Order entity
+            var orderEntity = await _orderDal.GetAsync(o => o.Id == dto.OrderId, cancellationToken);
+            if (orderEntity == null || orderEntity.UserId != userId)
+                return new ErrorResult("Order not found or unauthorized.");
+                
+            orderEntity.OrderStatus = dto.Status;
+            await _orderDal.UpdateAsync(orderEntity, cancellationToken);
             return new SuccessResult("Order status updated successfully.");
         }
 
-        public async Task<IResult> CreatePaymentAsync(Guid userId, OrderPaymentDto dto)
+        public async Task<IResult> CreatePaymentAsync(Guid userId, OrderPaymentDto dto, CancellationToken cancellationToken = default)
         {
-            var order = await _orderDal.GetAsync(o => o.Id == dto.OrderId);
+            var order = await _orderDal.GetAsync(o => o.Id == dto.OrderId, cancellationToken);
             if (order == null || order.UserId != userId)
                 return new ErrorResult("Order not found.");
 
@@ -102,26 +136,26 @@ namespace Bussiness.Concrete
 
             if ((PaymentStatus)dto.Status != PaymentStatus.Completed)
             {
-                order = Order.UpdateStatus(order, new OrderUpdateStatusDto
-                {
-                    OrderId = order.Id,
-                    Status = (int)OrderStatus.Failed,
-                });
-                await _orderDal.UpdateAsync(order);
+                order.OrderStatus = (int)OrderStatus.Failed;
+                await _orderDal.UpdateAsync(order, cancellationToken);
                 return new ErrorResult("Payment failed.");
             }
 
-            var payment = OrderPayment.Create(order.Id, dto);
-
-            using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
-            await _orderPaymentDal.AddAsync(payment);
-            order = Order.UpdateStatus(order, new OrderUpdateStatusDto
+            var payment = new OrderPayment
             {
+                Id = Guid.NewGuid(),
                 OrderId = order.Id,
-                Status = (int)OrderStatus.Paid,
-            });
-            await _orderDal.UpdateAsync(order);
-            scope.Complete();
+                Amount = order.TotalAmount,
+                Provider = dto.Provider,
+                TransactionId = dto.TransactionId,
+                Status = (int)PaymentStatus.Completed,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _orderPaymentDal.AddAsync(payment, cancellationToken);
+            order.OrderStatus = (int)OrderStatus.Completed;
+            await _orderDal.UpdateAsync(order, cancellationToken);
+
             return new SuccessResult("Payment processed successfully.");
         }
     }

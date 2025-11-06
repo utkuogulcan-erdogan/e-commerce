@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Bussiness.Concrete
@@ -19,10 +20,10 @@ namespace Bussiness.Concrete
         {
             _orderAddressDal = orderAddressDal;
         }
-        public async Task<DataResult<List<OrderAddressDisplayDto>>> GetOrderAddressesByUserIdAsync(Guid userId)
+        public async Task<DataResult<List<OrderAddressDisplayDto>>> GetOrderAddressesByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
             var specification = new OrderAddressSpecification(userId: userId);
-            return new SuccessDataResult<List<OrderAddressDisplayDto>>(await _orderAddressDal.GetOrderAddressesAsync(specification), "Order addresses retrieved successfully.");
+            return new SuccessDataResult<List<OrderAddressDisplayDto>>(await _orderAddressDal.GetOrderAddressesAsync(specification, cancellationToken), "Order addresses retrieved successfully.");
         }
 
     }

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Bussiness.Abstract
@@ -12,10 +13,10 @@ namespace Bussiness.Abstract
     public interface IUserService
     {
         //IDataResult<List<OperationClaim>> GetClaims(User user);
-        Task<IDataResult<UserDisplayDto>> GetByMailAsync(string email);
-        Task<IResult> AddAsync(UserAddDto user);
-        Task<IResult> UpdateAsync(Guid id, UserUpdateDto user);
-        Task<IResult> DeleteAsync(Guid id);
-        Task<IDataResult<List<UserDisplayDto>>> GetAllAsync();
+        Task<IDataResult<UserDisplayDto>> GetByMailAsync(string email, CancellationToken cancellationToken = default);
+        Task<IResult> AddAsync(UserAddDto user, CancellationToken cancellationToken = default);
+        Task<IResult> UpdateAsync(Guid id, UserUpdateDto user, CancellationToken cancellationToken = default);
+        Task<IResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<IDataResult<List<UserDisplayDto>>> GetAllAsync(CancellationToken cancellationToken = default);
     }
 }

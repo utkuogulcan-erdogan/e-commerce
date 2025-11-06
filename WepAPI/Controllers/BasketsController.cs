@@ -1,7 +1,9 @@
 ﻿using Bussiness.Abstract;
 using Entities.Concrete;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WepAPI.Controllers
 {
@@ -18,9 +20,9 @@ namespace WepAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllBasketsDetailedAsync()
+        public async Task<IActionResult> GetAllBasketsDetailedAsync(CancellationToken cancellationToken)
         {
-            var results = await _basketService.GetAllBasketsDetailedAsync();
+            var results = await _basketService.GetAllBasketsDetailedAsync(cancellationToken);
             if (results.Success)
             {
                 return Ok(results.Data);
@@ -28,19 +30,20 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var results = await _basketService.GetDetailedBasketByIdAsync(id);
+            var results = await _basketService.GetDetailedBasketByIdAsync(id, cancellationToken);
             if (results.Success)
             {
                 return Ok(results.Data);
             }
             return BadRequest(results);
         }
-        [HttpGet("user/{userId}")]
-        public async Task<IActionResult> GetByUserIdAsync(Guid userId)
+        [HttpGet("user")]
+        public async Task<IActionResult> GetByUserIdAsync(CancellationToken cancellationToken)
         {
-            var results = await _basketService.GetDetailedBasketByUserIdAsync(userId);
+            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            var results = await _basketService.GetDetailedBasketByUserIdAsync(userId, cancellationToken);
             if (results.Success)
             {
                 return Ok(results.Data);
@@ -48,10 +51,11 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
 
-        [HttpPost("users/{userId}/products/{productId}/quantity/{quantity}")]
-        public async Task<IActionResult> AddProductToBasketAsync(Guid userId,Guid productId, int quantity)
+        [HttpPost("user/products/{productId}/quantity/{quantity}")]
+        public async Task<IActionResult> AddProductToBasketAsync(Guid productId, int quantity, CancellationToken cancellationToken)
         {
-            var results = await _basketLineService.AddProductToBasketAsync(userId, productId, quantity);
+            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            var results = await _basketLineService.AddProductToBasketAsync(userId, productId, quantity, cancellationToken);
             if (results.Success)
             {
                 return Ok(results);
@@ -59,20 +63,22 @@ namespace WepAPI.Controllers
             return BadRequest(results);
 
         }
-        [HttpDelete("users/{userId}/products/{productId}")]
-        public async Task<IActionResult> RemoveProductFromBasketAsync(Guid userId, Guid productId)
+        [HttpDelete("user/products/{productId}")]
+        public async Task<IActionResult> RemoveProductFromBasketAsync(Guid productId, CancellationToken cancellationToken)
         {
-            var results = await _basketLineService.RemoveProductFromBasketAsync(userId, productId);
+            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            var results = await _basketLineService.RemoveProductFromBasketAsync(userId, productId, cancellationToken);
             if (results.Success)
             {
                 return Ok(results);
             }
             return BadRequest(results);
         }
-        [HttpPut("users/{userId}/products/{productId}/quantity/{quantity}")]
-        public async Task<IActionResult> UpdateProductQuantityAsync(Guid userId, Guid productId, int quantity)
+        [HttpPut("users/products/{productId}/quantity/{quantity}")]
+        public async Task<IActionResult> UpdateProductQuantityAsync(Guid productId, int quantity, CancellationToken cancellationToken)
         {
-            var results = await _basketLineService.UpdateProductQuantityAsync(userId, productId, quantity);
+            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            var results = await _basketLineService.UpdateProductQuantityAsync(userId, productId, quantity, cancellationToken);
             if (results.Success)
             {
                 return Ok(results);

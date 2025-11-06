@@ -13,7 +13,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
         }
 
-        public async Task<List<ProductDisplayDto>> GetAllProductsAsync()
+        public async Task<List<ProductDisplayDto>> GetAllProductsAsync(CancellationToken cancellationToken = default)
         {
             return await _context.Products
                 .Select(p => new ProductDisplayDto
@@ -33,16 +33,16 @@ namespace DataAccess.Concrete.EntityFramework
                         IsPrimary = i.IsPrimary
                     }).ToList()
                 })
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<Product> GetProductAsync(ISpecification<Product> specification)
+        public async Task<Product> GetProductAsync(ISpecification<Product> specification, CancellationToken cancellationToken = default)
         {
             return await _context.Products
                 .AsNoTracking()
                 .Where(specification.Criteria)
                 .Include(p => p.Images)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

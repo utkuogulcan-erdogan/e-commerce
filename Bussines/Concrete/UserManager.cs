@@ -24,7 +24,7 @@ namespace Bussiness.Concrete
             _hashingHelper = hashingHelper;
         }
 
-        public async Task<IResult> AddAsync(UserAddDto user)
+        public async Task<IResult> AddAsync(UserAddDto user, CancellationToken cancellationToken = default)
         {
             _hashingHelper.CreatePasswordHash(user.Password, out byte[] passwordHash, out byte[] passwordSalt);
             var newUser = User.Create(
@@ -32,31 +32,31 @@ namespace Bussiness.Concrete
                 passwordHash,
                 passwordSalt
             );
-            await _userDal.AddAsync(newUser);
+            await _userDal.AddAsync(newUser, cancellationToken);
             return new SuccessResult("User added successfully.");
         }
 
-        public async Task<IResult> DeleteAsync(Guid id)
+        public async Task<IResult> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            await _userDal.DeleteAsync(id);
+            await _userDal.DeleteAsync(id, cancellationToken);
             return new SuccessResult("User deleted successfully.");
         }
 
-        public async Task<IDataResult<List<UserDisplayDto>>> GetAllAsync()
+        public async Task<IDataResult<List<UserDisplayDto>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var response = await _userDal.GetAllUserAsync();
+            var response = await _userDal.GetAllUserAsync(cancellationToken);
             return new SuccessDataResult<List<UserDisplayDto>>(response, "Users listed successfully.");
         }
 
-        public async Task<IDataResult<UserDisplayDto>> GetByMailAsync(string email)
+        public async Task<IDataResult<UserDisplayDto>> GetByMailAsync(string email, CancellationToken cancellationToken = default)
         {
             var specification = new UserSpecification(email: email);
-            return new SuccessDataResult<UserDisplayDto>(await _userDal.GetUserAsync(specification), "User retrieved successfully.");
+            return new SuccessDataResult<UserDisplayDto>(await _userDal.GetUserAsync(specification, cancellationToken), "User retrieved successfully.");
         }
 
-        public async Task<IResult> UpdateAsync(Guid id, UserUpdateDto user)
+        public async Task<IResult> UpdateAsync(Guid id, UserUpdateDto user, CancellationToken cancellationToken = default)
         {
-            var existingUser = await _userDal.GetAsync(u => u.Id == id);
+            var existingUser = await _userDal.GetAsync(u => u.Id == id, cancellationToken);
             if (user == null)
             {
                 return new ErrorResult("User not found.");
@@ -70,7 +70,7 @@ namespace Bussiness.Concrete
                 userPasswordSalt = passwordSalt;
             }
             var updatedUser = User.Update(existingUser, userPasswordHash, userPasswordSalt, user);
-            await _userDal.UpdateAsync(updatedUser);
+            await _userDal.UpdateAsync(updatedUser, cancellationToken);
             return new SuccessResult("User updated successfully.");
         }
     }

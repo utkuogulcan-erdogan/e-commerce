@@ -2,6 +2,7 @@
 using Entities.DTO_s;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace WepAPI.Controllers
 {
@@ -17,9 +18,9 @@ namespace WepAPI.Controllers
             _orderAddressService = orderAddressService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
         {
-            var results = await _orderService.GetAllAsync();
+            var results = await _orderService.GetAllAsync(cancellationToken);
             if (results.Success)
             {
                 return Ok(results.Data);
@@ -27,9 +28,9 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var results = await _orderService.GetOrderByIdAsync(id);
+            var results = await _orderService.GetOrderByIdAsync(id, cancellationToken);
             if (results.Success)
             {
                 return Ok(results.Data);
@@ -37,10 +38,11 @@ namespace WepAPI.Controllers
             return BadRequest(results);
         }
 
-        [HttpPost("users/{userId}/orders")]
-        public async Task<IActionResult> CreateOrderAsync(Guid userId, OrderCreateDto dto)
+        [HttpPost("user/orders")]
+        public async Task<IActionResult> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
-            var order = await _orderService.CreateOrderAsync(userId, dto);
+            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            var order = await _orderService.CreateOrderAsync(userId, dto, cancellationToken);
             if (order.Success)
             {
                 return Ok(order);
@@ -48,10 +50,11 @@ namespace WepAPI.Controllers
             return BadRequest(order);
         }
 
-        [HttpPost("orders/{userId}/orders/payments")]
-        public async Task<IActionResult> CreatePaymentAsync(Guid userId, OrderPaymentDto dto)
+        [HttpPost("user/order/payments")]
+        public async Task<IActionResult> CreatePaymentAsync(OrderPaymentDto dto, CancellationToken cancellationToken)
         {
-            var payment = await _orderService.CreatePaymentAsync(userId, dto);
+            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            var payment = await _orderService.CreatePaymentAsync(userId, dto, cancellationToken);
             if (payment.Success)
             {
                 return Ok(payment);
@@ -59,10 +62,11 @@ namespace WepAPI.Controllers
             return BadRequest(payment);
         }
 
-        [HttpPut("orders/{userId}/orders/status")]
-        public async Task<IActionResult> UpdateOrderStatusAsync(Guid userId, OrderUpdateStatusDto dto)
+        [HttpPut("user/order/status")]
+        public async Task<IActionResult> UpdateOrderStatusAsync(OrderUpdateStatusDto dto, CancellationToken cancellationToken)
         {
-            var result = await _orderService.UpdateOrderStatusAsync(userId,dto);
+            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            var result = await _orderService.UpdateOrderStatusAsync(userId, dto, cancellationToken);
             if (result.Success)
             {
                 return Ok(result);

@@ -14,7 +14,7 @@ namespace DataAccess.Concrete.EntityFramework
         {
         }
 
-        public async Task<List<UserDisplayDto>> GetAllUserAsync()
+        public async Task<List<UserDisplayDto>> GetAllUserAsync(CancellationToken cancellationToken = default)
         {
             var result = await _context.Users
                 .Select(user => new UserDisplayDto
@@ -26,11 +26,11 @@ namespace DataAccess.Concrete.EntityFramework
                     CreatedAt = user.CreatedAt,
                 })
                 .AsNoTracking()
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
             return result;
         }
 
-        public async Task<UserDisplayDto> GetUserAsync(ISpecification<User> specification)
+        public async Task<UserDisplayDto> GetUserAsync(ISpecification<User> specification, CancellationToken cancellationToken = default)
         {
             var result = await _context.Users.Where(specification.Criteria)
                 .Select(user => new UserDisplayDto
@@ -42,7 +42,7 @@ namespace DataAccess.Concrete.EntityFramework
                     CreatedAt = user.CreatedAt,
                 })
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
             return result;
         }
     }
