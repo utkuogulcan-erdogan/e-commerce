@@ -3,7 +3,7 @@ using Entities.Concrete;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using WepAPI.Extensions;
 
 namespace WepAPI.Controllers
 {
@@ -42,7 +42,7 @@ namespace WepAPI.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> GetByUserIdAsync(CancellationToken cancellationToken)
         {
-            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            Guid userId = HttpContext.GetUserId();
             var results = await _basketService.GetDetailedBasketByUserIdAsync(userId, cancellationToken);
             if (results.Success)
             {
@@ -54,7 +54,7 @@ namespace WepAPI.Controllers
         [HttpPost("user/products/{productId}/quantity/{quantity}")]
         public async Task<IActionResult> AddProductToBasketAsync(Guid productId, int quantity, CancellationToken cancellationToken)
         {
-            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            Guid userId = HttpContext.GetUserId();
             var results = await _basketLineService.AddProductToBasketAsync(userId, productId, quantity, cancellationToken);
             if (results.Success)
             {
@@ -66,7 +66,7 @@ namespace WepAPI.Controllers
         [HttpDelete("user/products/{productId}")]
         public async Task<IActionResult> RemoveProductFromBasketAsync(Guid productId, CancellationToken cancellationToken)
         {
-            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            Guid userId = HttpContext.GetUserId();
             var results = await _basketLineService.RemoveProductFromBasketAsync(userId, productId, cancellationToken);
             if (results.Success)
             {
@@ -77,7 +77,7 @@ namespace WepAPI.Controllers
         [HttpPut("users/products/{productId}/quantity/{quantity}")]
         public async Task<IActionResult> UpdateProductQuantityAsync(Guid productId, int quantity, CancellationToken cancellationToken)
         {
-            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            Guid userId = HttpContext.GetUserId();
             var results = await _basketLineService.UpdateProductQuantityAsync(userId, productId, quantity, cancellationToken);
             if (results.Success)
             {

@@ -2,7 +2,7 @@
 using Entities.DTO_s;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using WepAPI.Extensions;
 
 namespace WepAPI.Controllers
 {
@@ -41,7 +41,7 @@ namespace WepAPI.Controllers
         [HttpPost("user/orders")]
         public async Task<IActionResult> CreateOrderAsync(OrderCreateDto dto, CancellationToken cancellationToken)
         {
-            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            Guid userId = HttpContext.GetUserId();
             var order = await _orderService.CreateOrderAsync(userId, dto, cancellationToken);
             if (order.Success)
             {
@@ -53,7 +53,7 @@ namespace WepAPI.Controllers
         [HttpPost("user/order/payments")]
         public async Task<IActionResult> CreatePaymentAsync(OrderPaymentDto dto, CancellationToken cancellationToken)
         {
-            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            Guid userId = HttpContext.GetUserId();
             var payment = await _orderService.CreatePaymentAsync(userId, dto, cancellationToken);
             if (payment.Success)
             {
@@ -65,7 +65,7 @@ namespace WepAPI.Controllers
         [HttpPut("user/order/status")]
         public async Task<IActionResult> UpdateOrderStatusAsync(OrderUpdateStatusDto dto, CancellationToken cancellationToken)
         {
-            Guid userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty);
+            Guid userId = HttpContext.GetUserId();
             var result = await _orderService.UpdateOrderStatusAsync(userId, dto, cancellationToken);
             if (result.Success)
             {
