@@ -1,4 +1,7 @@
-﻿namespace WepAPI.Middlewares
+﻿using System.Text.Json;
+using WepAPI.Middlewares.ExceptionHandlers;
+
+namespace WepAPI.Middlewares
 {
     public class GlobalExceptionHandlingMiddleware
     {
@@ -17,30 +20,20 @@
             {
                 await _next(context);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (Exception exception)
             {
-                _logger.LogWarning(ex, "Unauthorized access attempt");
-                context.Response.StatusCode = 401;
-                context.Response.ContentType = "application/json";
-                var response = new
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
-                await context.Response.WriteAsJsonAsync(response);
+                await HandleExceptionAsync(context, exception);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An unhandled exception occurred");
-                context.Response.StatusCode = 500;
-                context.Response.ContentType = "application/json";
-                var response = new
-                {
-                    Success = false,
-                    Message = ex.Message
-                };
-                await context.Response.WriteAsJsonAsync(response);
-            }
+        }
+
+        private Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            var (statusCode, response) = ExceptionResponseHelper.HandleException(exception, _logger);
+            
+            context.Response.ContentType = "application/json";
+            context.Response.StatusCode = statusCode;
+            
+            return context.Response.WriteAsync(response);
         }
     }
 }
