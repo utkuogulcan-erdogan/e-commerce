@@ -1,51 +1,47 @@
 ﻿using Bussiness.Abstract;
 using Core.Utilities.Results;
-using DataAccess.Abstract;
+using Core.Exceptions;
 using Entities.Concrete;
 using Entities.DTO_s;
 using Entities.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
+using Infrastructure.Persistence.Abstract;
+using System.Transactions;
 
 namespace Bussiness.Concrete
 {
     public class OrderManager : IOrderService
     {
-        IOrderDal _orderDal;
-        IBasketDal _basketDal;
+        IOrderRepository _orderRepository;
+        IBasketRepository _basketRepository;
         IOrderAddressService _orderAddressService;
-        IOrderPaymentDal _orderPaymentDal;
-        public OrderManager(IOrderDal orderDal, IBasketDal basketDal, IOrderAddressService orderAddressService, IOrderPaymentDal orderPaymentDal)
+        IOrderPaymentRepository _orderPaymentRepository;
+        public OrderManager(IOrderRepository orderRepository, IBasketRepository basketRepository, IOrderAddressService orderAddressService, IOrderPaymentRepository orderPaymentRepository)
         {
-            _orderDal = orderDal;
-            _basketDal = basketDal;
+            _orderRepository = orderRepository;
+            _basketRepository = basketRepository;
             _orderAddressService = orderAddressService;
-            _orderPaymentDal = orderPaymentDal;
+            _orderPaymentRepository = orderPaymentRepository;
         }
         public async Task<IDataResult<List<OrderDisplayDto>>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetAllOrdersAsync(cancellationToken), "Orders listed successfully.");
+            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderRepository.GetAllOrdersAsync(cancellationToken), "Orders listed successfully.");
         }
 
         public async Task<IDataResult<OrderDisplayDto>> GetOrderByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            return new SuccessDataResult<OrderDisplayDto>(await _orderDal.GetOrderByIdAsync(id, cancellationToken), "Order retrieved successfully.");
+            return new SuccessDataResult<OrderDisplayDto>(await _orderRepository.GetOrderByIdAsync(id, cancellationToken), "Order retrieved successfully.");
         }
 
         public async Task<IDataResult<List<OrderDisplayDto>>> GetOrdersByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
         {
-            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderDal.GetOrdersByUserIdAsync(userId, cancellationToken), "User orders listed successfully.");
+            return new SuccessDataResult<List<OrderDisplayDto>>(await _orderRepository.GetOrdersByUserIdAsync(userId, cancellationToken), "User orders listed successfully.");
         }
 
         public async Task<IResult> CreateOrderAsync(Guid userId, OrderCreateDto dto, CancellationToken cancellationToken = default)
         {
-            var basket = await _basketDal.GetDetailedBasketByUserIdAsync(userId, cancellationToken);
+            var basket = await _basketRepository.GetDetailedBasketByUserIdAsync(userId, cancellationToken);
             if (basket == null || !basket.BasketLines.Any())
-                return new ErrorDataResult<OrderDisplayDto>("Basket is empty.");
+                throw new BadRequestException("Basket is empty.");
 
             var order = new Order
             {
@@ -83,7 +79,7 @@ namespace Bussiness.Concrete
             }
             else
             {
-                return new ErrorResult("Shipping address is required.");
+                throw new BadRequestException("Shipping address is required.");
             }
             if (dto.BillingAddress != null)
             {
@@ -102,43 +98,46 @@ namespace Bussiness.Concrete
             }
             else
             {
-                return new ErrorResult("Billing address is required.");
+                throw new BadRequestException("Billing address is required.");
             }
-            await _orderDal.AddAsync(order, cancellationToken);
-            await _basketDal.DeleteAsync(basket.Id, cancellationToken);
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await _orderRepository.AddAsync(order, cancellationToken);
+                await _basketRepository.DeleteAsync(basket.Id, cancellationToken);
+                scope.Complete();
+            }
             return new SuccessResult("Order created successfully.");
         }
 
         public async Task<IResult> UpdateOrderStatusAsync(Guid userId, OrderUpdateStatusDto dto, CancellationToken cancellationToken = default)
         {
-            var order = await _orderDal.GetOrderByIdAsync(dto.OrderId, cancellationToken);
+            var order = await _orderRepository.GetOrderByIdAsync(dto.OrderId, cancellationToken);
             if (order == null)
-                return new ErrorResult("Order not found.");
-            
-            // Since GetOrderByIdAsync returns OrderDisplayDto, we need to get the actual Order entity
-            var orderEntity = await _orderDal.GetAsync(o => o.Id == dto.OrderId, cancellationToken);
+                throw new NotFoundException("Order not found.");
+
+            var orderEntity = await _orderRepository.GetAsync(o => o.Id == dto.OrderId, cancellationToken);
             if (orderEntity == null || orderEntity.UserId != userId)
-                return new ErrorResult("Order not found or unauthorized.");
-                
+                throw new UnauthorizedException("Order not found or unauthorized.");
+
             orderEntity.OrderStatus = dto.Status;
-            await _orderDal.UpdateAsync(orderEntity, cancellationToken);
+            await _orderRepository.UpdateAsync(orderEntity, cancellationToken);
             return new SuccessResult("Order status updated successfully.");
         }
 
         public async Task<IResult> CreatePaymentAsync(Guid userId, OrderPaymentDto dto, CancellationToken cancellationToken = default)
         {
-            var order = await _orderDal.GetAsync(o => o.Id == dto.OrderId, cancellationToken);
+            var order = await _orderRepository.GetAsync(o => o.Id == dto.OrderId, cancellationToken);
             if (order == null || order.UserId != userId)
-                return new ErrorResult("Order not found.");
+                throw new NotFoundException("Order not found.");
 
             if (order.OrderStatus != (int)OrderStatus.ReadyForPayment)
-                return new ErrorResult("Order is not ready for payment.");
+                throw new BadRequestException("Order is not ready for payment.");
 
             if ((PaymentStatus)dto.Status != PaymentStatus.Completed)
             {
                 order.OrderStatus = (int)OrderStatus.Failed;
-                await _orderDal.UpdateAsync(order, cancellationToken);
-                return new ErrorResult("Payment failed.");
+                await _orderRepository.UpdateAsync(order, cancellationToken);
+                throw new BadRequestException("Payment failed.");
             }
 
             var payment = new OrderPayment
@@ -151,10 +150,13 @@ namespace Bussiness.Concrete
                 Status = (int)PaymentStatus.Completed,
                 CreatedAt = DateTime.UtcNow
             };
-
-            await _orderPaymentDal.AddAsync(payment, cancellationToken);
-            order.OrderStatus = (int)OrderStatus.Completed;
-            await _orderDal.UpdateAsync(order, cancellationToken);
+            using (var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            {
+                await _orderPaymentRepository.AddAsync(payment, cancellationToken);
+                order.OrderStatus = (int)OrderStatus.Completed;
+                await _orderRepository.UpdateAsync(order, cancellationToken);
+                scope.Complete();
+            }
 
             return new SuccessResult("Payment processed successfully.");
         }

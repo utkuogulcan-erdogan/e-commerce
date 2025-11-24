@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using WepAPI.Middlewares.ExceptionHandlers;
+using Core.Exceptions.ExceptionHandlers.ExceptionHandlers;
 
 namespace WepAPI.Middlewares
 {
